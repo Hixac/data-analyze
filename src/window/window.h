@@ -1,5 +1,6 @@
 #pragma once
 
+#include "imgui.h"
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
@@ -17,14 +18,13 @@ public:
 	inline unsigned int GetWidth() { return m_Width; }
 	inline unsigned int GetHeight() { return m_Height; }
 
-	inline ImGuiIO& GetWindowIO() { return m_Io; }
+	inline ImGuiIO& GetWindowIO() { return ImGui::GetIO(); }
 	
 	bool StartUpdate();
     void EndUpdate();
 	bool IsClosed();
 private:
     GLFWwindow* m_pWindow;
-	ImGuiIO m_Io;
 	
 	unsigned int m_Height;
 	unsigned int m_Width;

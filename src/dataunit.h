@@ -18,10 +18,10 @@ namespace Database {
 		void Add(std::string code, std::vector<Dataunit> unit);
 		void Delete(std::string code);
 
-		inline std::unordered_map<std::string, std::vector<Dataunit>>& GetObjects() { return m_Objects; }
+		inline std::vector<std::pair<std::string, std::vector<Dataunit>>>& GetObjects() { return m_Objects; }
 		
 	private:
-		std::unordered_map<std::string, std::vector<Dataunit>> m_Objects;
+		std::vector<std::pair<std::string, std::vector<Dataunit>>> m_Objects;
 	};
 	
 }

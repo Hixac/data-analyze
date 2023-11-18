@@ -51,6 +51,7 @@ namespace File {
 		std::string strLine;
 		std::getline(m_File, strLine);
 
+		m_File.clear();
 		return strLine;
 	}
 	

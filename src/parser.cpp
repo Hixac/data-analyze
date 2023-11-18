@@ -1,4 +1,3 @@
-#include <extracter.h>
 #include <lexer.h>
 
 #include <memory>
@@ -60,5 +59,6 @@ namespace File {
 				break;
 			}
 		}
+		return throw 
 	}
 }

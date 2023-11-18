@@ -15,9 +15,8 @@ Window::Window(unsigned int width, unsigned int height, const char* title)
 
 	IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    m_Io = ImGui::GetIO();
 	
-    m_Io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();

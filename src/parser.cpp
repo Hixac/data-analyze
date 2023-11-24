@@ -1,7 +1,9 @@
+#include <exception>
 #include <lexer.h>
 
 #include <memory>
 #include <parser.h>
+#include <stdexcept>
 
 namespace File {
 
@@ -59,6 +61,6 @@ namespace File {
 				break;
 			}
 		}
-		return throw 
+	    throw std::invalid_argument("No \"[END]\" in database");
 	}
 }

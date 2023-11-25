@@ -22,7 +22,7 @@ namespace File {
 		bool startObjectFlag = false;
 		bool startSaving = false;
 		
-		std::string fileText = m_File->WholeRead();
+		std::string fileText = m_File->GetContent();
 		for (size_t i = 0; i < fileText.length(); i++)
 		{
 			switch(Lexer::SymbolResolver(fileText[i]))
@@ -62,5 +62,19 @@ namespace File {
 			}
 		}
 	    throw std::invalid_argument("No \"[END]\" in database");
+	}
+
+	void Parser::BackProcess(Database::Intersort& intersort)
+	{
+		std::string result = "";
+		
+		for (auto& data : intersort.GetObjects())
+		{
+			result += "[" + data.first + "]\n";
+			for (auto& unit : data.second)
+				result += unit.name + " = " + unit.value + "\n";
+		}
+		result += "[END]";
+		m_File->SetContent(result);
 	}
 }

@@ -15,7 +15,8 @@ namespace Database {
 	class Intersort
 	{
 	public:
-		void Add(std::string code, std::vector<Dataunit> unit);
+		void Add(std::string code, std::vector<Dataunit> units);
+		void AddIntoExisting(std::string code, Dataunit unit);
 		void Delete(std::string code);
 
 		inline std::vector<std::pair<std::string, std::vector<Dataunit>>>& GetObjects() { return m_Objects; }

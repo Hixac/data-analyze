@@ -5,27 +5,26 @@
 #include <vector>
 
 namespace File {
-
-    enum class STATE { Input, Output };
 	
 	class Extracter
 	{
 	public:
 		Extracter(const std::string& filepath);
 		~Extracter();
-
-		std::string ReadLine(size_t line);
-		std::string WholeRead();
 		
-		inline std::vector<std::string>& GetLines() { return m_Lines; }
+		std::string ReadLine(size_t line);
+
+	    void SetContent(const std::string& content);
+		inline std::string GetContent() const { return m_Content; }
 		
 	private:
-	    void ReadLines();
-		void GotoLine(unsigned int num, STATE state);
+		std::string WholeRead();
+		void GotoLine(size_t num);
 		
-		std::vector<std::string> m_Lines;
-		
-		std::fstream m_File;
+		std::string m_Content;
+
+		std::string m_Filepath;
+		std::ifstream m_File;
 	};
 	
 }

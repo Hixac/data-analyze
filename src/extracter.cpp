@@ -1,3 +1,4 @@
+#include <fstream>
 #include <parser.h>
 #include <string>
 #define DEBUG
@@ -6,27 +7,28 @@
 namespace File {
 
 	Extracter::Extracter(const std::string& filepath)
+		: m_Filepath(filepath)
 	{
 		m_File.open(filepath, std::fstream::in | std::fstream::out | std::fstream::app);
 		
-		ReadLines();
+		m_Content = WholeRead();
 	}
 
 	Extracter::~Extracter()
 	{
 		m_File.close();
 	}
-	
-	void Extracter::ReadLines()
+
+	void Extracter::SetContent(const std::string& content)
 	{
-		if (m_File)
-		{
-			std::string line;
-			while (std::getline(m_File, line))
-				m_Lines.push_back(line);
-			m_File.clear();
-		}
-		else { LOG_ERROR("File isn't opened!"); }
+		m_Content = content;
+		
+		std::ofstream output(m_Filepath, std::ios::out | std::ios::trunc);
+		if (!output.is_open()) LOG_ERROR("Something went wrong rewriting file!");
+		
+	    output << m_Content;
+		output.close();
+		m_File.clear();
 	}
 
 	std::string Extracter::WholeRead()
@@ -36,7 +38,7 @@ namespace File {
 			std::string text;
 			std::string line;
 
-			GotoLine(0, STATE::Input);
+			GotoLine(0);
 			while (std::getline(m_File, line))
 			    text += line + '\n';
 			m_File.clear();
@@ -47,7 +49,7 @@ namespace File {
 	
 	std::string Extracter::ReadLine(size_t line)
 	{
-		GotoLine(line, STATE::Input);
+		GotoLine(line);
 		std::string strLine;
 		std::getline(m_File, strLine);
 
@@ -55,16 +57,8 @@ namespace File {
 		return strLine;
 	}
 	
-	void Extracter::GotoLine(unsigned int num, STATE state)
+	void Extracter::GotoLine(size_t num)
 	{
-		switch (state)
-		{
-		case STATE::Input:
-			m_File.seekg(num, std::ios::beg);
-			break;
-		case STATE::Output:
-			m_File.seekp(num, std::ios::beg);
-			break;
-		}
+		m_File.seekg(num, std::ios::beg);
 	}
 }

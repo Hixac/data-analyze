@@ -10,7 +10,9 @@ namespace File {
 	{
 	public:
 		Parser(Extracter& file);
+		
 		Database::Intersort Process();
+	    void BackProcess(Database::Intersort& data);
 		
 	private:
 		std::unique_ptr<Extracter> m_File;

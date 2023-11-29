@@ -22,7 +22,7 @@ namespace File {
 		bool startObjectFlag = false;
 		bool startSaving = false;
 		
-		std::string fileText = m_File->GetContent();
+		const std::string fileText = m_File->GetContent();
 		for (size_t i = 0; i < fileText.length(); i++)
 		{
 			switch(Lexer::SymbolResolver(fileText[i]))

@@ -11,7 +11,8 @@ set(SOURCE
   src/extracter.h src/extracter.cpp
   src/lexer.h
   src/parser.h src/parser.cpp
-  src/dataunit.h src/dataunit.cpp)
+  src/dataunit.h src/dataunit.cpp
+  src/imgui/fastcombo.h)
 
 set(IMGUI_DIR ext/imgui/)
 set(SPDLOG_DIR ext/spdlog/)

@@ -3,10 +3,14 @@
 #include <LoggingSystem.h>
 
 #ifdef DEBUG
+    #include <cassert>
+
 	#define LOG_WARN(x) Log::LoggingSystem::Send(x, Log::Types::Warn)
 	#define LOG_CRITICAL(x) Log::LoggingSystem::Send(x, Log::Types::Critical)
 	#define LOG_INFO(x) Log::LoggingSystem::Send(x, Log::Types::Info)
-	#define LOG_ERROR(x) Log::LoggingSystem::Send(x, Log::Types::Error)
+    #define LOG_ERROR(x) Log::LoggingSystem::Send(x, Log::Types::Error);\
+                         assert(false)
+	
 
 	#define INIT_LOG() Log::LoggingSystem::Instantiate("Logger");\
 					   LOG_INFO("Log system has initialized!")
@@ -18,5 +22,3 @@
 
 	#define INIT_LOG()
 #endif
-
-#define ASSERT(x) spdlog::error(x); __debugbreak()

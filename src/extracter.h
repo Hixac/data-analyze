@@ -15,7 +15,7 @@ namespace File {
 		std::string ReadLine(size_t line);
 
 	    void SetContent(const std::string& content);
-		inline std::string GetContent() const { return m_Content; }
+		inline const std::string& GetContent() const { return m_Content; }
 		
 	private:
 		std::string WholeRead();

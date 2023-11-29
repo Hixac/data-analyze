@@ -2,7 +2,6 @@
 
 #include <string>
 #include <vector>
-#include <unordered_map>
 
 namespace Database {
 
@@ -12,17 +11,23 @@ namespace Database {
 		std::string value;
 	};
 
+	using Object = std::pair<std::string, std::vector<Dataunit>>;
+	
 	class Intersort
 	{
 	public:
-		void Add(std::string code, std::vector<Dataunit> units);
-		void AddIntoExisting(std::string code, Dataunit unit);
-		void Delete(std::string code);
+		void Add(const std::string& code, const std::vector<Dataunit> units);
+		void AddIntoExisting(const std::string& code, Dataunit unit);
+		void Delete(const std::string& code);
+		void Delete(const std::string& code, const std::string& name);
 
-		inline std::vector<std::pair<std::string, std::vector<Dataunit>>>& GetObjects() { return m_Objects; }
+		Dataunit& FindByName(const std::string& code, const std::string& name);
+		bool FindCode(const std::string& code) const;
+		
+		inline std::vector<Object>& GetObjects() { return m_Objects; }
 		
 	private:
-		std::vector<std::pair<std::string, std::vector<Dataunit>>> m_Objects;
+		std::vector<Object> m_Objects;
 	};
 	
 }

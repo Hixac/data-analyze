@@ -3,9 +3,11 @@
 #include <misc/cpp/imgui_stdlib.h>
 #include <window.h>
 #include <spdlog/spdlog.h>
+
 #define DEBUG
 #include <Base.h>
 
+#include <imgui/fastcombo.h>
 #include <parser.h>
 
 void CreateTableInput(std::string& buffer, size_t id)
@@ -34,12 +36,15 @@ int main(void)
 
 	File::Extracter file("db.rot");
 	File::Parser parser(file);
-    auto data = parser.Process();
+	Database::Intersort data = parser.Process();
 
+	Database::Object bufferObject;
+    int bufferColumns = 1;
+	
 	std::string bufferName;
 	std::string bufferValue;
-
-	int current_name = 0;
+	
+	unsigned int current_name = 0;
 	
   	Window win(1280, 720, "Парковка");
     while (win.StartUpdate())
@@ -51,28 +56,82 @@ int main(void)
 
 	    if (ImGui::BeginMenuBar())
 		{
-			if (ImGui::BeginMenu("Add"))
+			if (ImGui::BeginMenu("Add object"))
+			{
+				ImGui::InputText("Object", &bufferObject.first);
+				ImGui::SliderInt("Columns", &bufferColumns, 1, 100);
+
+				for (size_t i = 0; bufferObject.second.size() < bufferColumns && i < bufferColumns; i++)
+					bufferObject.second.push_back({});
+				
+				if (ImGui::BeginTable("Example", 2, ImGuiTableFlags_SizingStretchSame))
+				{
+					ImGui::TableSetupColumn("Name");
+					ImGui::TableSetupColumn("Value");
+					ImGui::TableHeadersRow();
+
+					ImGui::TableNextColumn();
+					for (size_t i = 0; i < bufferColumns; i++)
+					{
+						CreateTableInput(bufferObject.second[i].name, i);
+					}
+
+					ImGui::TableNextColumn();
+					for (size_t i = 0; i < bufferColumns; i++)
+					{
+						CreateTableInput(bufferObject.second[i].value, i+100);
+					}
+				
+					ImGui::EndTable();
+				}
+
+				if (ImGui::Button("Commit") && !bufferObject.first.empty())
+				{
+					data.Add(bufferObject.first, bufferObject.second);
+				}
+				
+				ImGui::EndMenu();
+			}
+			else
+			{
+				bufferObject.first.clear(); bufferObject.second.clear();
+			}
+
+			if (ImGui::BeginMenu("Delete object"))
+			{
+			    const char* preview_val = data.GetObjects()[current_name].first.c_str();
+				auto names = GetFirstOfPairs<std::string, std::vector<Database::Dataunit>>(data.GetObjects());
+				MyGui::FastCombo("Object listing", names, current_name, preview_val);
+				if (ImGui::Button("Commit"))
+				{
+					data.Delete(preview_val);
+				}
+				ImGui::EndMenu();
+			}
+			if (ImGui::BeginMenu("Add|Change"))
 			{
 				const char* preview_val = data.GetObjects()[current_name].first.c_str();
-			    if (ImGui::BeginCombo("Names for commiting", preview_val))
-				{
-					auto names = GetFirstOfPairs<std::string, std::vector<Database::Dataunit>>(data.GetObjects());
-					for (size_t i = 0; i < names.size(); i++)
-					{
-						const bool is_selected = (current_name == i);
-					    if (ImGui::Selectable(names[i].c_str(), is_selected))
-						    current_name = i;
-						
-						if (is_selected)
-							ImGui::SetItemDefaultFocus();
-					}
-					ImGui::EndCombo();
-				}
-				ImGui::Text("Name: "); ImGui::SameLine(); ImGui::InputText("NewName", &bufferName);
-				ImGui::Text("Value: "); ImGui::SameLine(); ImGui::InputText("NewValue", &bufferValue);
+				auto names = GetFirstOfPairs<std::string, std::vector<Database::Dataunit>>(data.GetObjects());
+				MyGui::FastCombo("Object listing", names, current_name, preview_val);
+				
+				ImGui::InputText("Name", &bufferName);
+				ImGui::InputText("Value", &bufferValue);
 				if (ImGui::Button("Commit"))
 				{
 					data.AddIntoExisting(data.GetObjects()[current_name].first, {bufferName, bufferValue});
+				}
+				ImGui::EndMenu();
+			}
+			if (ImGui::BeginMenu("Delete"))
+			{
+				const char* preview_val = data.GetObjects()[current_name].first.c_str();
+				auto names = GetFirstOfPairs<std::string, std::vector<Database::Dataunit>>(data.GetObjects());
+				MyGui::FastCombo("Object listing", names, current_name, preview_val);
+				
+				ImGui::InputText("Name", &bufferName);
+				if (ImGui::Button("Commit"))
+				{
+					data.Delete(data.GetObjects()[current_name].first, bufferName);
 				}
 				ImGui::EndMenu();
 			}
@@ -97,12 +156,13 @@ int main(void)
 				ImGui::TableNextColumn();
 				for (size_t i = 0; i < object.second.size(); i++)
 				{
-					CreateTableInput(object.second[i].value, i+10);
+					CreateTableInput(object.second[i].value, i+1000);
 				}
 				
 				ImGui::EndTable();
 			}
 		}
+		
 		parser.BackProcess(data);
 		
 		ImGui::End();

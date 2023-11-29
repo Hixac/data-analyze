@@ -34,6 +34,8 @@ int main(void)
 {
 	INIT_LOG();
 
+	/* PARKING WINDOW VARIABLES */
+	
 	File::Extracter file("db.rot");
 	File::Parser parser(file);
 	Database::Intersort data = parser.Process();
@@ -51,7 +53,7 @@ int main(void)
     {
 		ImGui::Begin("Parking", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar
 					 | ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoResize);
-		ImGui::SetWindowSize(win.GetWindowIO().DisplaySize);
+		ImGui::SetWindowSize({win.GetWindowIO().DisplaySize.x / 2, win.GetWindowIO().DisplaySize.y});
 		ImGui::SetWindowPos({0, 0});
 
 	    if (ImGui::BeginMenuBar())
@@ -164,6 +166,18 @@ int main(void)
 		}
 		
 		parser.BackProcess(data);
+		
+		ImGui::End();
+
+		ImGui::Begin("Example", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
+		ImGui::SetWindowSize({win.GetWindowIO().DisplaySize.x / 2, win.GetWindowIO().DisplaySize.y});
+		ImGui::SetWindowPos({win.GetWindowIO().DisplaySize.x / 2, 0});
+
+		std::string text = file.GetContent();
+		ImGui::InputTextMultiline("##Example", &text, {win.GetWindowIO().DisplaySize.x / 2, win.GetWindowIO().DisplaySize.y});
+		file.SetContent(text);
+
+		data = parser.Process();
 		
 		ImGui::End();
 		

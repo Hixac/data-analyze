@@ -4,6 +4,7 @@
 #include <memory>
 #include <parser.h>
 #include <stdexcept>
+#include <string>
 
 namespace File {
 
@@ -34,6 +35,7 @@ namespace File {
 				tempName = "";
 				break;
 			case Tokenizer::EndObject:
+				if (tempName == "END") return data; /* <-- return */
 				startObjectFlag = false;
 				break;
 			case Tokenizer::Undefined:
@@ -45,7 +47,6 @@ namespace File {
 				startSaving = true;
 				break;
 			case Tokenizer::Commiting:
-				if (tempName == "END") return data; /* <-- return */
 				if (startSaving)
 				{
 					units.push_back(unit);
@@ -63,7 +64,7 @@ namespace File {
 		}
 	    throw std::invalid_argument("No \"[END]\" in database");
 	}
-
+	
 	void Parser::BackProcess(Database::Intersort& intersort)
 	{
 		std::string result = "";

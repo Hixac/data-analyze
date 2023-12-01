@@ -12,7 +12,9 @@ set(SOURCE
   src/lexer.h
   src/parser.h src/parser.cpp
   src/dataunit.h src/dataunit.cpp
-  src/imgui/fastcombo.h)
+  src/imgui/fastcombo.h
+  src/imgui/dynamictimer.h src/imgui/dynamictimer.cpp
+  src/imgui/deltatime.h)
 
 set(IMGUI_DIR ext/imgui/)
 set(SPDLOG_DIR ext/spdlog/)

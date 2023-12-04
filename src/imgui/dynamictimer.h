@@ -5,20 +5,16 @@ namespace MyGui {
 	class DynamicTimer
 	{
 	public:
-		inline static DynamicTimer& Get() { static DynamicTimer timer; return timer; }
+		DynamicTimer(float time);
+		DynamicTimer() = default;
+		~DynamicTimer() = default;
 		
 		void start(float time); // -> Nullifies time var and give permission to update
 	    bool update(); // -> When time is full stops update
 		
 	private:
-		bool m_Permission;
+		bool m_Permission = false;
 		float m_Time;
-		
-		DynamicTimer() = default;
-		~DynamicTimer() = default;
-		DynamicTimer(const DynamicTimer&&) = delete;
-		DynamicTimer(const DynamicTimer&) = delete;
-		void operator=(const DynamicTimer&) = delete;
 	};
 	
 }

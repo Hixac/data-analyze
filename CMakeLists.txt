@@ -14,7 +14,12 @@ set(SOURCE
   src/dataunit.h src/dataunit.cpp
   src/imgui/fastcombo.h
   src/imgui/dynamictimer.h src/imgui/dynamictimer.cpp
-  src/imgui/deltatime.h)
+  src/imgui/deltatime.h
+  src/Application.h src/MainApplication.h
+  src/Shelling/mainshell.h
+  src/Shelling/parking.h src/Shelling/parking.cpp
+  src/Shelling/example.h src/Shelling/example.cpp
+  src/Shelling/info.h src/Shelling/info.cpp)
 
 set(IMGUI_DIR ext/imgui/)
 set(SPDLOG_DIR ext/spdlog/)

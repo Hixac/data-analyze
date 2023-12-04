@@ -3,6 +3,12 @@
 
 namespace MyGui {
 
+	DynamicTimer::DynamicTimer(float time)
+	{
+		m_Time = ImGui::GetTime() + time;
+		m_Permission = true;
+	}
+	
 	void DynamicTimer::start(float time)
 	{
 		m_Time = ImGui::GetTime() + time;

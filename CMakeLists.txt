@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.27)
 
-project(Parking
+project(DataAnalyze
         VERSION 0.1
 		DESCRIPTION "SEEKING FOR PARIN"
 		LANGUAGES CXX)

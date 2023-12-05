@@ -25,40 +25,47 @@ set(IMGUI_DIR ext/imgui/)
 set(SPDLOG_DIR ext/spdlog/)
 
 set(IMGUI_SRC
-  ${PROJECT_SOURCE_DIR}/ext/imgui/misc/cpp/imgui_stdlib.h
-  ${PROJECT_SOURCE_DIR}/ext/imgui/misc/cpp/imgui_stdlib.cpp
-  ${PROJECT_SOURCE_DIR}/ext/imgui/misc
-  ${PROJECT_SOURCE_DIR}/ext/imgui/imstb_truetype.h
-  ${PROJECT_SOURCE_DIR}/ext/imgui/imstb_textedit.h
-  ${PROJECT_SOURCE_DIR}/ext/imgui/imstb_rectpack.h
-  ${PROJECT_SOURCE_DIR}/ext/imgui/imgui_widgets.cpp
-  ${PROJECT_SOURCE_DIR}/ext/imgui/imgui_tables.cpp
-  ${PROJECT_SOURCE_DIR}/ext/imgui/imgui_internal.h
-  ${PROJECT_SOURCE_DIR}/ext/imgui/imgui_impl_opengl3_loader.h
-  ${PROJECT_SOURCE_DIR}/ext/imgui/imgui_impl_opengl3.h
-  ${PROJECT_SOURCE_DIR}/ext/imgui/imgui_impl_opengl3.cpp
-  ${PROJECT_SOURCE_DIR}/ext/imgui/imgui_impl_glfw.h
-  ${PROJECT_SOURCE_DIR}/ext/imgui/imgui_impl_glfw.cpp
-  ${PROJECT_SOURCE_DIR}/ext/imgui/imgui_draw.cpp
-  ${PROJECT_SOURCE_DIR}/ext/imgui/imgui_demo.cpp
-  ${PROJECT_SOURCE_DIR}/ext/imgui/imgui.h
-  ${PROJECT_SOURCE_DIR}/ext/imgui/imgui.cpp
-  ${PROJECT_SOURCE_DIR}/ext/imgui/imconfig.h)
+  ${IMGUI_DIR}misc/cpp/imgui_stdlib.h
+  ${IMGUI_DIR}misc/cpp/imgui_stdlib.cpp
+  ${IMGUI_DIR}misc
+  ${IMGUI_DIR}imstb_truetype.h
+  ${IMGUI_DIR}imstb_textedit.h
+  ${IMGUI_DIR}imstb_rectpack.h
+  ${IMGUI_DIR}imgui_widgets.cpp
+  ${IMGUI_DIR}imgui_tables.cpp
+  ${IMGUI_DIR}imgui_internal.h
+  ${IMGUI_DIR}imgui_impl_opengl3_loader.h
+  ${IMGUI_DIR}imgui_impl_opengl3.h
+  ${IMGUI_DIR}imgui_impl_opengl3.cpp
+  ${IMGUI_DIR}imgui_impl_glfw.h
+  ${IMGUI_DIR}imgui_impl_glfw.cpp
+  ${IMGUI_DIR}imgui_draw.cpp
+  ${IMGUI_DIR}imgui_demo.cpp
+  ${IMGUI_DIR}imgui.h
+  ${IMGUI_DIR}imgui.cpp
+  ${IMGUI_DIR}imconfig.h)
 
 set(SPDLOG_SRC
-  ${PROJECT_SOURCE_DIR}/ext/spdlog/spdlog)
+  ${SRDLOG_DIR})
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_FLAGS -g)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-  
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+
 add_executable(${PROJECT_NAME} ${SOURCE} ${IMGUI_SRC} ${SPDLOG_SRC})
 
 find_package(OpenGL REQUIRED)
 target_link_libraries(${PROJECT_NAME} OpenGL::GL)
 
-find_package(glfw3 3.3 REQUIRED)
-target_link_libraries(${PROJECT_NAME} glfw)
+if(WIN32)
+	target_include_directories(${PROJECT_NAME} PRIVATE deps/glfw/include)
+	add_subdirectory(deps/glfw)
+	target_link_libraries(${PROJECT_NAME} glfw ${GLFW_LIBRARIES})
+elseif(UNIX)
+	find_package(glfw3 3.3 REQUIRED)
+	target_link_libraries(${PROJECT_NAME} glfw)
+endif()
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${SPDLOG_DIR})
 target_include_directories(${PROJECT_NAME} PRIVATE ${IMGUI_DIR})

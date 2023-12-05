@@ -25,8 +25,8 @@ public:
 
 		Shell::ImGuiTalkBuffer::file = std::make_unique<File::Extracter>("db.rot");
 		Shell::ImGuiTalkBuffer::parser = std::make_unique<File::Parser>(*Shell::ImGuiTalkBuffer::file);
-		
-	    m_Window.GetWindowIO().Fonts->AddFontFromFileTTF("../res/JetBrainsMonoNLNerdFontMono-Regular.ttf", 23);
+
+		m_Window.GetWindowIO().Fonts->AddFontFromFileTTF("../res/JetBrainsMonoNLNerdFontMono-Regular.ttf", 23);
 		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.0f);
 
 		std::vector<Shell::Shell*> shells;

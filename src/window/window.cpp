@@ -1,4 +1,3 @@
-#include <GLFW/glfw3.h>
 #include <window.h>
 
 Window::Window(unsigned int width, unsigned int height, const char* title)

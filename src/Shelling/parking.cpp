@@ -135,7 +135,7 @@ namespace Shell {
 			}
 		}
 		
-		ImGuiTalkBuffer::parser->BackProcess(ImGuiTalkBuffer::data);
+		ImGuiTalkBuffer::parser->WriteData(ImGuiTalkBuffer::data);
 		
 		ImGui::End();
 	}

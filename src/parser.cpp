@@ -1,81 +1,74 @@
-#include <exception>
-#include <lexer.h>
-
+#include <vector>
 #include <memory>
-#include <parser.h>
-#include <stdexcept>
 #include <string>
+#include <iostream>
+
+#include <parser.h>
 
 namespace File {
 
+	void WhiteSpaceRemoval(std::string& s)
+	{	
+		for (int i = 0; i < s.size(); i++)
+		{
+			if (s[i] == ' ')
+			{
+				s.erase(s.begin() + i);
+			}
+		}
+	}
+	
 	Parser::Parser(Extracter& file)
 	{
 		m_File = std::unique_ptr<Extracter>(&file);
 	}
 
-	Database::Intersort Parser::Process()
+	void Parser::ReadData(Database::Intersort& data)
 	{
-		Database::Intersort data;
+		std::string source = m_File->GetContent();
+		Lexer lexer(source);
+
+		std::vector<Symbol> symbs = lexer.GetAllSymbols();
 		
-		std::string tempName = "";
-		Database::Dataunit unit;
-		std::vector<Database::Dataunit> units;
-		bool startObjectFlag = false;
-		bool startSaving = false;
-		
-		const std::string fileText = m_File->GetContent();
-		for (size_t i = 0; i < fileText.length(); i++)
+		std::vector<Database::Object> objects;
+		Database::Object object;
+
+		for (int i = 0; i < symbs.size(); i++)
 		{
-			switch(Lexer::SymbolResolver(fileText[i]))
-			{
-			case Tokenizer::StartObject:
-				startObjectFlag = true;
-				if (!tempName.empty()) data.Add(tempName, units);
-				units.clear();
-				tempName = "";
-				break;
-			case Tokenizer::EndObject:
-				if (tempName == "END") return data; /* <-- return */
-				startObjectFlag = false;
-				break;
-			case Tokenizer::Undefined:
-				if (startObjectFlag)   tempName += fileText[i];
-				else if (!startSaving) unit.name += fileText[i];
-				else if (startSaving)  unit.value += fileText[i];
-				break;
-			case Tokenizer::Saving:
-				startSaving = true;
-				break;
-			case Tokenizer::Commiting:
-				if (startSaving)
-				{
-					units.push_back(unit);
-				    unit.name = ""; unit.value = "";
-				}
-				startSaving = false;
-				break;
-			case Tokenizer::Commentary:
-				continue;
-			case Tokenizer::Space:
-				break;
-			case Tokenizer::None:
-				break;
-			}
+			WhiteSpaceRemoval(symbs[i].value);
 		}
-	    throw std::invalid_argument("No \"[END]\" in database");
+		
+	    for (int i = 0; i < symbs.size(); i++)
+		{
+			if (symbs[i].token == HighTokens::ObjectName)
+			{
+				if (!object.first.empty()) objects.push_back(object);
+				object.first = symbs[i].value;
+			}
+			if (symbs[i].token == HighTokens::AttributeName)
+			{
+				if (symbs[i + 1].token != HighTokens::AttributeType)
+					object.second.push_back({symbs[i].value, symbs[i + 1].value});
+				else
+				{
+					Database::Type type;
+					std::string typeStr = symbs[i + 1].value;
+
+					if (typeStr == "int")
+						type = Database::Type::Integer;
+					else if (typeStr == "float")
+						type = Database::Type::Float;
+					else type = Database::Type::String;
+					
+					object.second.push_back({symbs[i].value, symbs[i + 2].value, type});
+				}
+			}
+	    }
+		data.GetObjects() = objects;
 	}
 	
-	void Parser::BackProcess(Database::Intersort& intersort)
+	void Parser::WriteData(Database::Intersort& data)
 	{
-		std::string result = "";
 		
-		for (auto& data : intersort.GetObjects())
-		{
-			result += "[" + data.first + "]\n";
-			for (auto& unit : data.second)
-				result += unit.name + " = " + unit.value + "\n";
-		}
-		result += "[END]";
-		m_File->SetContent(result);
 	}
 }

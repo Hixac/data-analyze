@@ -9,7 +9,7 @@ set(SOURCE
   src/main.cpp src/Base.h src/LoggingSystem.h
   src/window/window.h src/window/window.cpp
   src/extracter.h src/extracter.cpp
-  src/lexer.h
+  src/lexer.h src/lexer.cpp
   src/parser.h src/parser.cpp
   src/dataunit.h src/dataunit.cpp
   src/imgui/fastcombo.h

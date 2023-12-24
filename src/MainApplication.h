@@ -7,7 +7,6 @@
 
 #include <Application.h>
 
-#define DEBUG
 #include <Base.h>
 
 #include <imgui/deltatime.h>

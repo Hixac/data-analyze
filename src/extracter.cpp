@@ -47,7 +47,7 @@ namespace File {
 			m_File.clear();
 			return text;
 		}
-		else { LOG_ERROR("File isn't opened!"); }
+		LOG_ERROR("File isn't opened!");
 	}
 	
 	std::string Extracter::ReadLine(size_t line)

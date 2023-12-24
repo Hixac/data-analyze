@@ -2,7 +2,7 @@
 
 #include <LoggingSystem.h>
 
-#ifdef DEBUG
+#ifndef NDEBUG
     #include <cassert>
 
 	#define LOG_WARN(x) Log::LoggingSystem::Send(x, Log::Types::Warn)
@@ -10,7 +10,6 @@
 	#define LOG_INFO(x) Log::LoggingSystem::Send(x, Log::Types::Info)
     #define LOG_ERROR(x) Log::LoggingSystem::Send(x, Log::Types::Error);\
                          assert(false)
-	
 
 	#define INIT_LOG() Log::LoggingSystem::Instantiate("Logger");\
 					   LOG_INFO("Log system has initialized!")

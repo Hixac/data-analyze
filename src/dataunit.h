@@ -5,10 +5,13 @@
 
 namespace Database {
 
+	enum class Type { Integer, Float, String };
+	
     struct Dataunit
 	{
 		std::string name;
 		std::string value;
+		Type type = Type::String;
 	};
 
 	using Object = std::pair<std::string, std::vector<Dataunit>>;
@@ -23,7 +26,8 @@ namespace Database {
 
 		Dataunit& FindByName(const std::string& code, const std::string& name);
 		bool FindCode(const std::string& code) const;
-		
+
+		inline void SetObjects(std::vector<Object> objects) { m_Objects = objects; }
 		inline std::vector<Object>& GetObjects() { return m_Objects; }
 		
 	private:

@@ -1,42 +1,47 @@
 #pragma once
 
+#include <Base.h>
+
+#include <vector>
+#include <string>
+
 namespace File {
 
 	enum class Tokenizer
 	{
-		None, Undefined, Space,
-		Saving, Commiting, Commentary,
-		StartObject, EndObject
+	    Undefined,
+	    NewLine, Assign, StartObject, EndObject, Commentary, Type
+	};
+
+	enum class HighTokens
+	{
+		ObjectName, AttributeName, AttributeVal, AttributeType
+	};
+	
+	struct Symbol
+	{
+		std::string value;
+	    HighTokens token;
 	};
 	
 	class Lexer
 	{
 	public:
-		static Tokenizer SymbolResolver(const char symbol)
-		{
-			switch (symbol)
-			{
-			case '[':
-				return Tokenizer::StartObject;
-			case ']':
-				return Tokenizer::EndObject;
-			case '|':
-				return Tokenizer::Commentary;
-			case '\n':
-				return Tokenizer::Commiting;
-			case '=':
-				return Tokenizer::Saving;
-			case ' ':
-				return Tokenizer::Space;
-			default:
-				return Tokenizer::Undefined;
-			}
-		}
-
-		inline static Tokenizer LastToken = Tokenizer::None;
-	private:
-		Lexer() = default;
+		Lexer(std::string& text);
 	    ~Lexer() = default;
+		
+		inline std::vector<Symbol>& GetAllSymbols() { return m_Symbs; }
+		
+	private:
+		std::vector<Symbol> m_Symbs;
+		std::vector<std::pair<Tokenizer, size_t>> m_Tokens;
+		
+		std::string& m_Text;
+		size_t m_CursorPos;
+		
+	    void ResolveTokens();
+	    void ResolveNextSymbol();
+		void AnalyzeSymbols();
 	};
 	
 }

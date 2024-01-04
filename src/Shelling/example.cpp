@@ -17,8 +17,6 @@ namespace Shell {
 		std::string text = ImGuiTalkBuffer::file->GetContent();
 		ImGui::InputTextMultiline("##Example", &text, {m_Window->GetWindowIO().DisplaySize.x / 2, m_Window->GetWindowIO().DisplaySize.y - 100});
 	    ImGuiTalkBuffer::file->SetContent(text);
-
-	    ImGuiTalkBuffer::parser->ReadData(ImGuiTalkBuffer::data);
 		
 		ImGui::End();
 

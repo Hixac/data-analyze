@@ -4,6 +4,17 @@
 
 namespace File {
 
+	void WhiteSpaceRemoval(std::string& s)
+	{	
+		for (int i = 0; i < s.size(); i++)
+		{
+			if (s[i] == ' ')
+			{
+				s.erase(s.begin() + i);
+			}
+		}
+	}
+	
 	Lexer::Lexer(std::string& text)
 		: m_Text(text), m_CursorPos(0)
 	{
@@ -37,19 +48,29 @@ namespace File {
 
 		m_CursorPos++;
 	}
-
+	
 	void Lexer::AnalyzeSymbols()
 	{
-		for (int i = 0; i < m_Tokens.size() - 1; i++)
+		std::vector<Symbol> symbols;
+		for (int i = 0; i < m_Tokens.size(); i++)
 		{
+			std::string slice = m_Text.substr(m_Tokens[i].second + 1, m_Tokens[i + 1].second - m_Tokens[i].second - 1);
+			WhiteSpaceRemoval(slice);
 			if (m_Tokens[i].first == Tokenizer::StartObject)
-				m_Symbs.push_back({m_Text.substr(m_Tokens[i].second + 1, m_Tokens[i + 1].second - m_Tokens[i].second - 1), HighTokens::ObjectName});
-			if (m_Tokens[i].first == Tokenizer::NewLine && (m_Symbs[m_Symbs.size() - 1].token == HighTokens::ObjectName || m_Symbs[m_Symbs.size() - 1].token == HighTokens::AttributeVal))
-				m_Symbs.push_back({m_Text.substr(m_Tokens[i].second + 1, m_Tokens[i + 1].second - m_Tokens[i].second - 1), HighTokens::AttributeName});
+			{
+				if (!symbols.empty())
+				{
+					m_Symbs.push_back(symbols);
+					symbols.clear();
+				}
+			    symbols.push_back({slice, HighTokens::ObjectName});
+			}
+			if (m_Tokens[i].first == Tokenizer::NewLine && i + 1 < m_Tokens.size() && m_Tokens[i + 1].first != Tokenizer::StartObject)
+			    symbols.push_back({slice, HighTokens::AttributeName});
 			if (m_Tokens[i].first == Tokenizer::Type)
-				m_Symbs.push_back({m_Text.substr(m_Tokens[i].second + 1, m_Tokens[i + 1].second - m_Tokens[i].second - 1), HighTokens::AttributeType});
+			    symbols.push_back({slice, HighTokens::AttributeType});
 			if (m_Tokens[i].first == Tokenizer::Assign)
-				m_Symbs.push_back({m_Text.substr(m_Tokens[i].second + 1, m_Tokens[i + 1].second - m_Tokens[i].second - 1), HighTokens::AttributeVal});
+				symbols.push_back({slice, HighTokens::AttributeVal});
 		}
 	}
 }

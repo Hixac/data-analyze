@@ -1,3 +1,4 @@
+#include "dataunit.h"
 #include <vector>
 #include <memory>
 #include <string>
@@ -7,17 +8,6 @@
 
 namespace File {
 
-	void WhiteSpaceRemoval(std::string& s)
-	{	
-		for (int i = 0; i < s.size(); i++)
-		{
-			if (s[i] == ' ')
-			{
-				s.erase(s.begin() + i);
-			}
-		}
-	}
-	
 	Parser::Parser(Extracter& file)
 	{
 		m_File = std::unique_ptr<Extracter>(&file);
@@ -28,47 +18,72 @@ namespace File {
 		std::string source = m_File->GetContent();
 		Lexer lexer(source);
 
-		std::vector<Symbol> symbs = lexer.GetAllSymbols();
+		std::vector<std::vector<Symbol>> symbs = lexer.GetAllSymbols();
 		
 		std::vector<Database::Object> objects;
 		Database::Object object;
-
-		for (int i = 0; i < symbs.size(); i++)
-		{
-			WhiteSpaceRemoval(symbs[i].value);
-		}
 		
-	    for (int i = 0; i < symbs.size(); i++)
+	    for (auto& item : symbs)
 		{
-			if (symbs[i].token == HighTokens::ObjectName)
+			object.first = item[0].value;
+			Database::Dataunit unit;
+			for (int i = 1; i < item.size(); i++)
 			{
-				if (!object.first.empty()) objects.push_back(object);
-				object.first = symbs[i].value;
-			}
-			if (symbs[i].token == HighTokens::AttributeName)
-			{
-				if (symbs[i + 1].token != HighTokens::AttributeType)
-					object.second.push_back({symbs[i].value, symbs[i + 1].value});
+			    Symbol sym = item[i];
+				if (sym.token == HighTokens::AttributeName)
+				{
+					unit.name = sym.value;
+					continue;
+				}
+				else if (sym.token == HighTokens::AttributeType)
+				{
+				    if (sym.value == "int")
+						unit.type = Database::Type::Integer;
+					if (sym.value == "float")
+						unit.type = Database::Type::Float;
+					if (sym.value == "str")
+						unit.type = Database::Type::String;
+					continue;
+				}
 				else
 				{
-					Database::Type type;
-					std::string typeStr = symbs[i + 1].value;
-
-					if (typeStr == "int")
-						type = Database::Type::Integer;
-					else if (typeStr == "float")
-						type = Database::Type::Float;
-					else type = Database::Type::String;
-					
-					object.second.push_back({symbs[i].value, symbs[i + 2].value, type});
-				}
+					unit.value = sym.value;
+					object.second.push_back(unit);
+					continue;
+				}				
 			}
-	    }
-		data.GetObjects() = objects;
+			objects.push_back(object);
+			object.second.clear();
+		}
+		
+		data.SetObjects(objects);
 	}
 	
 	void Parser::WriteData(Database::Intersort& data)
 	{
+		std::string content = "";
+		for (auto& object : data.GetObjects())
+		{
+			content += "[" + object.first + "]\n";
+			for (auto& item : object.second)
+			{
+				std::string type;
+				if (item.type == Database::Type::Integer)
+					type = "int";
+				else if (item.type == Database::Type::Float)
+					type = "float";
+				else type = "str";
+
+				std::string err = "";
+				item.ErrChk();
+				if (item.err == Database::Error::WrongType)
+					err = " | ERROR! WRONG TYPE!";
+				
+				content += item.name + ": " + type + " = " + item.value + err + "\n";
+			}
+		}
+		content += "[END]\n";
 		
+		m_File->SetContent(content);
 	}
 }

@@ -11,6 +11,8 @@
 
 #include <imgui/deltatime.h>
 
+#include <implot.h>
+
 class MainApplication : public Application
 {
 public:
@@ -36,18 +38,25 @@ public:
 
 		shells.push_back(&win1);
 		shells.push_back(&win2);
-		shells.push_back(&win3);
-			
+		shells.push_back(&win3);		
+		
+		Shell::ImGuiTalkBuffer::parser->ReadData(Shell::ImGuiTalkBuffer::data);
 		while (m_Window.StartUpdate())
 		{
 			MyGui::SuicideCommand commando;
 
+#if 0
+			ImPlot::ShowUserGuide();
+			ImPlot::ShowDemoWindow();
+#else
 			for (auto& shell : shells)
 				shell->OnUpdate();
+			Shell::ImGuiTalkBuffer::parser->ReadData(Shell::ImGuiTalkBuffer::data);
+#endif
 			
 			m_Window.EndUpdate();
 		}
-
+		
 		Window::StopIMGUI();
 	}
 	

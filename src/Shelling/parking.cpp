@@ -1,5 +1,7 @@
+#include "imgui.h"
 #include <Shelling/parking.h>
 
+#include <implot.h>
 #include <imgui/fastcombo.h>
 #include <misc/cpp/imgui_stdlib.h>
 
@@ -10,7 +12,7 @@ namespace Shell {
 	{}
 	
 	void Parking::OnUpdate()
-	{
+	{	
 		ImGui::Begin("Parking", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar
 					 | ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoResize);
 		ImGui::SetWindowSize({(m_Window->GetWindowIO().DisplaySize.x / 3) * 2, m_Window->GetWindowIO().DisplaySize.y - ImGuiTalkBuffer::winCheckSize});
@@ -107,9 +109,30 @@ namespace Shell {
 				ImGui::EndMenu();
 			}
 			ImGui::Separator();
+			if (ImGui::BeginMenu("Graph"))
+			{
+			    if (ImGui::BeginTabBar("Graphs"))
+				{
+					if (ImGui::BeginTabItem("Axis"))
+					{
+						ImGui::EndTabItem();
+					}
+					if (ImGui::BeginTabItem("Axis2"))
+					{
+						ImGui::EndTabItem();
+					}
+					if (ImGui::BeginTabItem("Axis3"))
+					{
+						ImGui::EndTabItem();
+					}
+					ImGui::EndTabBar();
+				}
+				ImGui::EndMenu();
+			}
+			ImGui::Separator();
 			ImGui::EndMenuBar();
 		}
-
+		
 		for (auto& object : ImGuiTalkBuffer::data.GetObjects())
 		{
 			ImGui::Text("%s", object.first.c_str());
@@ -135,7 +158,7 @@ namespace Shell {
 			}
 		}
 		
-		ImGuiTalkBuffer::parser->WriteData(ImGuiTalkBuffer::data);
+	    ImGuiTalkBuffer::parser->WriteData(ImGuiTalkBuffer::data);
 		
 		ImGui::End();
 	}

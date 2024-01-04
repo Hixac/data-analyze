@@ -1,4 +1,5 @@
 #include <window.h>
+#include <implot.h>
 
 Window::Window(unsigned int width, unsigned int height, const char* title)
 	: m_Height(height), m_Width(width)
@@ -14,6 +15,7 @@ Window::Window(unsigned int width, unsigned int height, const char* title)
 
 	IMGUI_CHECKVERSION();
     ImGui::CreateContext();
+	ImPlot::CreateContext();
 	
 	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 
@@ -57,6 +59,7 @@ bool Window::IsClosed()
 
 void Window::StopIMGUI()
 {
+	ImPlot::DestroyContext();
 	ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();

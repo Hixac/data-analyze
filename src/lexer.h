@@ -30,10 +30,10 @@ namespace File {
 		Lexer(std::string& text);
 	    ~Lexer() = default;
 		
-		inline std::vector<Symbol>& GetAllSymbols() { return m_Symbs; }
+		inline std::vector<std::vector<Symbol>>& GetAllSymbols() { return m_Symbs; }
 		
 	private:
-		std::vector<Symbol> m_Symbs;
+		std::vector<std::vector<Symbol>> m_Symbs;
 		std::vector<std::pair<Tokenizer, size_t>> m_Tokens;
 		
 		std::string& m_Text;

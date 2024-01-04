@@ -21,8 +21,16 @@ set(SOURCE
   src/Shelling/example.h src/Shelling/example.cpp
   src/Shelling/info.h src/Shelling/info.cpp)
 
+set(IMPLOT_DIR ext/implot/)
 set(IMGUI_DIR ext/imgui/)
 set(SPDLOG_DIR ext/spdlog/)
+
+set(IMPLOT_SRC
+  ext/implot/implot.cpp
+  ext/implot/implot_items.cpp
+  ext/implot/implot.h
+  ext/implot/implot_demo.cpp
+  ext/implot/implot_internal.h)
 
 set(IMGUI_SRC
   ${IMGUI_DIR}misc/cpp/imgui_stdlib.h
@@ -53,7 +61,7 @@ set(CMAKE_CXX_FLAGS -g)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
-add_executable(${PROJECT_NAME} ${SOURCE} ${IMGUI_SRC} ${SPDLOG_SRC})
+add_executable(${PROJECT_NAME} ${SOURCE} ${IMPLOT_SRC} ${IMGUI_SRC} ${SPDLOG_SRC})
 
 find_package(OpenGL REQUIRED)
 target_link_libraries(${PROJECT_NAME} OpenGL::GL)
@@ -64,5 +72,6 @@ target_link_libraries(${PROJECT_NAME} glfw ${GLFW_LIBRARIES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${SPDLOG_DIR})
 target_include_directories(${PROJECT_NAME} PRIVATE ${IMGUI_DIR})
+target_include_directories(${PROJECT_NAME} PRIVATE ${IMPLOT_DIR})
 target_include_directories(${PROJECT_NAME} PRIVATE src/)
 target_include_directories(${PROJECT_NAME} PRIVATE src/window/)

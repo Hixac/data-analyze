@@ -24,6 +24,7 @@ namespace File {
 		m_Content = content;
 		
 		std::ofstream output(m_Filepath, std::ios::out | std::ios::trunc);
+		
 		if (!output.is_open())
 		{
 			LOG_ERROR("Something went wrong rewriting file!");

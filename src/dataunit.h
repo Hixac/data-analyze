@@ -1,17 +1,41 @@
 #pragma once
 
+#include <algorithm>
+#include <cctype>
 #include <string>
 #include <vector>
 
 namespace Database {
 
 	enum class Type { Integer, Float, String };
+	enum class Error { None, WrongType };
 	
     struct Dataunit
 	{
 		std::string name;
 		std::string value;
 		Type type = Type::String;
+		Error err = Error::None;
+
+		void ErrChk()
+		{
+			if (type == Type::Integer)
+			{
+				if (!std::all_of(value.begin(), value.end(), ::isdigit))
+					err = Error::WrongType;
+			}
+			else if (type == Type::Float)
+			{
+				bool dot = false;
+			    for (auto it = value.begin(); it != value.end(); it++)
+				{
+					if (*it == '.' && !dot)
+						dot = true;
+					else if (*it == '.' && dot || !isdigit(*it))
+						err = Error::WrongType;
+				}
+			}
+		}
 	};
 
 	using Object = std::pair<std::string, std::vector<Dataunit>>;

@@ -1,22 +1,26 @@
-#include "imgui.h"
 #include <Shelling/parking.h>
 
 #include <implot.h>
 #include <imgui/fastcombo.h>
+#include <imgui.h>
 #include <misc/cpp/imgui_stdlib.h>
+
+#include <mathread.h>
 
 namespace Shell {
 
-	Parking::Parking(Window& window)
-		: m_Window(&window)
-	{}
-	
 	void Parking::OnUpdate()
-	{	
-		ImGui::Begin("Parking", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar
-					 | ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoResize);
-		ImGui::SetWindowSize({(m_Window->GetWindowIO().DisplaySize.x / 3) * 2, m_Window->GetWindowIO().DisplaySize.y - ImGuiTalkBuffer::winCheckSize});
-		ImGui::SetWindowPos({0, 0});
+	{
+		if (m_showWindow)
+			UpdateWrap();
+	}
+	
+	void Parking::UpdateWrap()
+	{
+		ImGui::SetNextWindowBgAlpha(1);
+		ImGui::Begin("Parking", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBringToFrontOnFocus);
+		ImGui::SetWindowSize({(float)m_width, (float)m_height});
+		ImGui::SetWindowPos({m_posx, m_posy});
 
 		if (ImGui::BeginMenuBar())
 		{	
@@ -109,23 +113,11 @@ namespace Shell {
 				ImGui::EndMenu();
 			}
 			ImGui::Separator();
-			if (ImGui::BeginMenu("Graph"))
+			if (ImGui::BeginMenu("View"))
 			{
-			    if (ImGui::BeginTabBar("Graphs"))
+				for (int i = 1; i < ImGuiTalkBuffer::windows->size(); i++)
 				{
-					if (ImGui::BeginTabItem("Axis"))
-					{
-						ImGui::EndTabItem();
-					}
-					if (ImGui::BeginTabItem("Axis2"))
-					{
-						ImGui::EndTabItem();
-					}
-					if (ImGui::BeginTabItem("Axis3"))
-					{
-						ImGui::EndTabItem();
-					}
-					ImGui::EndTabBar();
+					ImGui::Checkbox((*ImGuiTalkBuffer::windows)[i]->GetLabel().c_str(), &(*ImGuiTalkBuffer::windows)[i]->GetActive());
 				}
 				ImGui::EndMenu();
 			}

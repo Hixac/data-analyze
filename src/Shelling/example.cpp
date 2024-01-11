@@ -4,15 +4,18 @@
 
 namespace Shell {
 
-	Example::Example(Window& window)
-		: m_Window(&window)
-	{ }
-	
 	void Example::OnUpdate()
 	{
+		if (m_showWindow)
+			UpdateWrap();
+	}
+	
+	void Example::UpdateWrap()
+	{
+		ImGui::SetNextWindowBgAlpha(1);
 		ImGui::Begin("Example", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
-		ImGui::SetWindowSize({m_Window->GetWindowIO().DisplaySize.x / 3, m_Window->GetWindowIO().DisplaySize.y - ImGuiTalkBuffer::winCheckSize});
-		ImGui::SetWindowPos({m_Window->GetWindowIO().DisplaySize.x - m_Window->GetWindowIO().DisplaySize.x / 3, 0});
+		ImGui::SetWindowSize({(float)m_width, (float)m_height});
+		ImGui::SetWindowPos({m_posx, m_posy});
 
 		std::string text = ImGuiTalkBuffer::file->GetContent();
 		ImGui::InputTextMultiline("##Example", &text, {m_Window->GetWindowIO().DisplaySize.x / 2, m_Window->GetWindowIO().DisplaySize.y - 100});

@@ -19,7 +19,8 @@ set(SOURCE
   src/Shelling/mainshell.h
   src/Shelling/parking.h src/Shelling/parking.cpp
   src/Shelling/example.h src/Shelling/example.cpp
-  src/Shelling/info.h src/Shelling/info.cpp)
+  src/Shelling/info.h src/Shelling/info.cpp
+  src/utility/mathread.cpp src/utility/mathread.h)
 
 set(IMPLOT_DIR ext/implot/)
 set(IMGUI_DIR ext/imgui/)
@@ -74,4 +75,5 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${SPDLOG_DIR})
 target_include_directories(${PROJECT_NAME} PRIVATE ${IMGUI_DIR})
 target_include_directories(${PROJECT_NAME} PRIVATE ${IMPLOT_DIR})
 target_include_directories(${PROJECT_NAME} PRIVATE src/)
+target_include_directories(${PROJECT_NAME} PRIVATE src/utility/)
 target_include_directories(${PROJECT_NAME} PRIVATE src/window/)

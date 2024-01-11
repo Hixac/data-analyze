@@ -32,18 +32,27 @@ public:
 
 		std::vector<Shell::Shell*> shells;
 		
-		Shell::Parking win1(m_Window);
-		Shell::Example win2(m_Window);
-		Shell::Info win3(m_Window);
+		Shell::Parking win1(true, "DataShow", m_Window.GetWidth(), m_Window.GetHeight(), m_Window);
+		Shell::Example win2(false, "Text", m_Window.GetWidth(), m_Window.GetHeight(), m_Window);
+		Shell::Info    win3(false, "Info", m_Window.GetWidth(), m_Window.GetHeight(), m_Window);
 
+		win1.SetPos(0, 0);
+		win2.SetPos(0, 29);
+		win3.SetPos(0, 29);
+		
 		shells.push_back(&win1);
 		shells.push_back(&win2);
-		shells.push_back(&win3);		
-		
+		shells.push_back(&win3);	
+
+		Shell::ImGuiTalkBuffer::windows = &shells;
 		Shell::ImGuiTalkBuffer::parser->ReadData(Shell::ImGuiTalkBuffer::data);
 		while (m_Window.StartUpdate())
 		{
 			MyGui::SuicideCommand commando;
+
+			win1.SetScreen(m_Window.GetWindowIO().DisplaySize.x, m_Window.GetWindowIO().DisplaySize.y);
+			win2.SetScreen(m_Window.GetWindowIO().DisplaySize.x, m_Window.GetWindowIO().DisplaySize.y - 29);
+			win3.SetScreen(m_Window.GetWindowIO().DisplaySize.x, m_Window.GetWindowIO().DisplaySize.y - 29);
 
 #if 0
 			ImPlot::ShowUserGuide();

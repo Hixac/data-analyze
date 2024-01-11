@@ -9,11 +9,13 @@ namespace Shell {
 	class Example : public Shell
 	{
 	public:
-	    Example(Window& window);
+	    Example(bool show, const std::string label, unsigned int width, unsigned int height, Window& window) : m_Window(&window), Shell(label, width, height, show) { }
 
 		void OnUpdate() override;
 
 	private:
+		void UpdateWrap() override;
+		
 	    Window* m_Window;
 	};
 			

@@ -4,16 +4,19 @@
 
 namespace Shell {
 
-	Info::Info(Window& window)
-		: m_Window(&window)
-	{}
-
 	void Info::OnUpdate()
 	{
+		if (m_showWindow)
+			UpdateWrap();
+	}
+	
+	void Info::UpdateWrap()
+	{
+		ImGui::SetNextWindowBgAlpha(1);
 		ImGui::Begin("Check", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
-		ImGui::SetWindowSize({m_Window->GetWindowIO().DisplaySize.x, ImGuiTalkBuffer::winCheckSize });
-		ImGui::SetWindowPos({0, m_Window->GetWindowIO().DisplaySize.y - ImGuiTalkBuffer::winCheckSize });
-				
+		ImGui::SetWindowSize({(float)m_width, (float)m_height});
+		ImGui::SetWindowPos({m_posx, m_posy});
+		
 		ImGui::SameLine();		
 		ImGui::Text("dtime: %f", MyGui::BasicInformation::deltatime);
 		

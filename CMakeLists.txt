@@ -20,6 +20,7 @@ set(SOURCE
   src/Shelling/parking.h src/Shelling/parking.cpp
   src/Shelling/example.h src/Shelling/example.cpp
   src/Shelling/info.h src/Shelling/info.cpp
+  src/Shelling/graph.h src/Shelling/graph.cpp
   src/utility/mathread.cpp src/utility/mathread.h)
 
 set(IMPLOT_DIR ext/implot/)

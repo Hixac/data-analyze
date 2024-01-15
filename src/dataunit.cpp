@@ -1,7 +1,5 @@
 #include <cstdio>
 #include <dataunit.h>
-#define DEBUG
-#include <Base.h>
 
 namespace Database {
 
@@ -12,8 +10,16 @@ namespace Database {
 			m_Objects.push_back(std::pair(code, unit));
 			return;
 		}
-
-		LOG_ERROR("Code already existing!");
+		else
+		{
+			for (auto& data : m_Objects)
+			{
+				if (data.first == code)
+				{
+					data.second = unit;
+				}
+			}
+		}
 	}
 
 	void Intersort::AddIntoExisting(const std::string& code, Dataunit unit)
@@ -29,7 +35,7 @@ namespace Database {
 		}
 		if (p_data == nullptr)
 		{
-			LOG_ERROR("No code!");
+		    return;
 		}
 
 		for (auto& dunit : *p_data)
@@ -44,7 +50,7 @@ namespace Database {
 		p_data->push_back(unit);
 	}
 
-	Dataunit& Intersort::FindByName(const std::string& code, const std::string& name)
+	bool Intersort::FindByName(const std::string& code, const std::string& name, Dataunit& dunit)
 	{
 		for (auto& object : m_Objects)
 		{
@@ -52,11 +58,14 @@ namespace Database {
 				for (auto& unit : object.second)
 				{
 					if (unit.name == name)
-						return unit;
+					{
+						dunit = unit;
+						return true;
+					}
 				}
 		}
 
-		LOG_ERROR("No name either code!");
+		return false;
 	}
 
 	bool Intersort::FindCode(const std::string& code) const
@@ -69,8 +78,8 @@ namespace Database {
 		return false;
 	}
 
-	void Intersort::Delete(const std::string& code, const std::string& name)
-	{
+	bool Intersort::Delete(const std::string& code, const std::string& name)
+	{		
 	    for (auto& object : m_Objects)
 		{
 			if (object.first == code)			
@@ -79,25 +88,25 @@ namespace Database {
 					if (object.second[i].name == name)
 					{
 						object.second.erase(object.second.begin() + i);
-						return;
+						return true;
 					}
 				}		
 		}
 
-		LOG_ERROR("No code either name!");
+		return false;
 	}
 	
-	void Intersort::Delete(const std::string& code)
+    bool Intersort::Delete(const std::string& code)
 	{
 	    for (size_t i = 0; i < m_Objects.size(); i++)
 		{
 			if (m_Objects[i].first == code)
 			{
 				m_Objects.erase(m_Objects.begin() + i);
-			    return;
+			    return true;
 			}
 		}
 
-		LOG_ERROR("No code!");
+	    return false;
 	}
 }

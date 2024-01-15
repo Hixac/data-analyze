@@ -43,6 +43,8 @@ namespace File {
 						unit.type = Database::Type::Float;
 					if (sym.value == "str")
 						unit.type = Database::Type::String;
+					if (sym.value == "point")
+						unit.type = Database::Type::Point;
 					continue;
 				}
 				else
@@ -72,6 +74,8 @@ namespace File {
 					type = "int";
 				else if (item.type == Database::Type::Float)
 					type = "float";
+				else if (item.type == Database::Type::Point)
+					type = "point";
 				else type = "str";
 
 				std::string err = "";

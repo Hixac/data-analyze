@@ -1,7 +1,7 @@
 #include <fstream>
 #include <parser.h>
 #include <string>
-#define DEBUG
+
 #include <Base.h>
 
 namespace File {

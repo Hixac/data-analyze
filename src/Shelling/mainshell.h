@@ -44,15 +44,8 @@ namespace Shell {
 		inline static std::vector<Shell*>* windows;
 		
 		inline static Database::Intersort data;
-		
-		inline static Database::Object bufferObject;
-		
-		inline static std::string bufferName;
-		inline static std::string bufferValue;
 				
 		inline static ImGuiTableFlags tableFlags = ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_SizingStretchSame;
-		inline static int bufferColumns = 1;
-		inline static unsigned int currentName = 0;		
 	};
 	
 }

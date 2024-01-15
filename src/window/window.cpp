@@ -17,9 +17,8 @@ Window::Window(unsigned int width, unsigned int height, const char* title)
     ImGui::CreateContext();
 	ImPlot::CreateContext();
 	
-	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-
-    // Setup Dear ImGui style
+	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+	
     ImGui::StyleColorsDark();
 	
 	glfwMakeContextCurrent(m_pWindow);
@@ -59,8 +58,8 @@ bool Window::IsClosed()
 
 void Window::StopIMGUI()
 {
-	ImPlot::DestroyContext();
 	ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
+	ImPlot::DestroyContext();
     ImGui::DestroyContext();
 }

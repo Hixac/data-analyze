@@ -1,9 +1,14 @@
 #include <mathread.h>
 
+#include <cfloat>
 #include <cassert>
 #include <iterator>
 #include <algorithm>
 #include <math.h>
+#include <string>
+
+#include <imgui/deltatime.h>
+#include <imgui.h>
 
 Yard::Yard(std::string expression, int x)
 {
@@ -34,40 +39,101 @@ Yard::Yard(std::string expression, int x)
 		}
 		else tokens.push_back(std::string{c});
 	}
+
+	for (auto& el : tokens)
+	{
+		if (el == "time")
+			el = std::to_string(ImGui::GetTime());
+		if (el == "dtime")
+			el = std::to_string(MyGui::BasicInformation::deltatime);
+	}
 }
 
-float Yard::result()
+int Yard::result(float& answer)
 {
+	if (tokens.size() == 0 || tokens.size() == 2) return -2;
+	for (int i = 1; i < tokens.size()-1; i++)
+	{
+		auto& tok = tokens[i];
+		auto& ltok = tokens[i - 1];
+		auto& rtok = tokens[i + 1];
+		if (IsOper(tok))
+			if ((!IsNumber(ltok) || !IsNumber(rtok)) && (!IsFunction(rtok) && ltok != ")")) return -10;
+		if (IsFunction(rtok) && i == tokens.size()-2)
+			return -12;
+	}
+	int t1 = 0, t2 = 0;
+	for (auto& tok : tokens)
+	{
+	    if (!IsFunction(tok) && IsWord(tok)) return -11;
+		if (tok == "(")
+			t1++;
+		if (tok == ")")
+			t2++;
+	}
+	if (t1 != t2) return -7;
+	
 	auto rit = std::find(tokens.rbegin(), tokens.rend(), "(");
-	while (rit != tokens.rend()) {
+	while (rit != tokens.rend())
+	{
 		Yard yard;
 			
 		unsigned int first = std::distance(begin(tokens), rit.base()) - 1;
 		auto it = std::find(tokens.begin() + first, tokens.end(), ")");
-		if (it == tokens.end()) assert(false && "NO DAMN SHIT MAN FUUUUCK NAAAAH YOU FORGOT LEFT PARENTHESIS");		    
-		yard.SetTokens(std::vector<std::string>(tokens.begin() + first + 1, it));
-		tokens.insert(tokens.begin() + first, std::to_string(yard.result()));
-		tokens.erase(tokens.begin() + first + 1, it + 2);
+		unsigned int second = it - tokens.begin();
+		if (it == tokens.end()) return -1;
+		if (first >= 1 && (tokens[first - 1] == opers[0] || tokens[first - 1] == opers[1] || tokens[first - 1] == opers[2]))
+		{
+			yard.SetTokens(std::vector<std::string>(tokens.begin() + first + 1, it));
+			int err; if ((err = yard.result(answer)) < 0) return err;
+			tokens.insert(tokens.begin() + first + 1, std::to_string(answer));
+			tokens.erase(tokens.begin() + first + 2, tokens.begin() + second + 1);
+			
+			Presedence p = ClearFunction(first - 1);
+			if (p.op == "0") return -8;
+			
+			answer = GetVal(p);
+			tokens.insert(tokens.begin() + p.index, std::to_string(answer));
+			tokens.erase(tokens.begin() + p.index + 1, tokens.begin() + (p.index + 5));
+		}
+		else
+		{
+			yard.SetTokens(std::vector<std::string>(tokens.begin() + first + 1, it));
+			int err; if ((err = yard.result(answer)) < 0) return err;
+			tokens.insert(tokens.begin() + first, std::to_string(answer));
+			tokens.erase(tokens.begin() + first + 1, tokens.begin() + second + 2);			
+		}
 
 		rit = std::find(tokens.rbegin(), tokens.rend(), "(");
 	}
-		
-	unsigned int index;
-	float num;
-
+	
+	if (tokens.size() == 1 and IsNumber(tokens[0]))
+	{
+		answer = std::stof(tokens[0]);
+		return 0;
+	}
+	
 	while (tokens.size() != 1)
 	{
 		Presedence p = FindHighestPresedence();
-		num = GetVal(p);
-		tokens.insert(tokens.begin() + (p.index - 1), std::to_string(num));
-		tokens.erase(tokens.begin() + (p.index), tokens.begin() + (p.index + 3));
-	}
+		if (p.op == "0") return -6;
 		
-	return num;
+	    answer = GetVal(p);
+		tokens.insert(tokens.begin() + p.index - 1, std::to_string(answer));
+		tokens.erase(tokens.begin() + p.index, tokens.begin() + (p.index + 3));
+	}
+
+	return 0;
 }
 
 float Yard::GetVal(Presedence p)
 {
+	if (p.op == "abs")
+		return abs(p.operand1);
+	if (p.op == "sin")
+		return sinf(p.operand1);
+	if (p.op == "cos")
+		return cosf(p.operand1);
 	if (p.op == "^")
 		return pow(p.operand1, p.operand2);
 	if (p.op == "/")
@@ -82,18 +148,44 @@ float Yard::GetVal(Presedence p)
 	assert(false && "Didn't found an operator!");
 }
 
-Yard::Presedence Yard::FindHighestPresedence()
+Yard::Presedence Yard::ClearFunction(unsigned int index)
 {
-	for (auto& op : opers)
+	// Поиск функций (ПИЗДЕЦ Я ЗАЕБАЛСЯ)
+	for (int i = 0; i < opers.size() - 5; i++)
 	{
-		auto it = std::find(tokens.begin(), tokens.end(), op);
+		auto it = std::find(tokens.begin() + index, tokens.end(), opers[i]);
 		if (it != tokens.end())
-		{
-			unsigned int index = it - tokens.begin();
-			return {index, *it, std::stof(tokens[index - 1]), std::stof(tokens[index + 1]) };
+		{ // из-за злоебучего "стоф" мне приходится пригибаться и впендюривать трай-кэч, эта хуйня жрёт неоправданно много ресов, но я говокодер)))) нэ пэрэжэвайти
+			try {
+				unsigned int index = it - tokens.begin();
+				return {index, *it, std::stof(tokens[index + 2])};
+			}
+			catch (...) {
+				LOG_WARN("STOF CANNOT HANDLE IT (FUNCTION SIDE)");
+			}
 		}
 	}
-	assert(false && "Didn't get operation!");
+	return {0, "0", 0, FLT_MAX};
+}
+
+// Поиск токенам по приоритету и получение их операнд
+Yard::Presedence Yard::FindHighestPresedence()
+{
+	for (int i = 2; i < opers.size(); i++)
+	{
+		auto it = std::find(tokens.begin(), tokens.end(), opers[i]);
+		if (it != tokens.end())
+		{
+			try {
+				unsigned int index = it - tokens.begin();
+				return {index, *it, std::stof(tokens[index - 1]), std::stof(tokens[index + 1]) };				
+			}
+			catch (...) {
+				LOG_WARN("STOF CANNOT HANDLE!");
+			}
+		}
+	}
+    return {0, "0", 0, FLT_MAX};
 }
 
 void Yard::WhiteSpaceRemoval(std::string& s)
@@ -104,11 +196,33 @@ void Yard::WhiteSpaceRemoval(std::string& s)
 bool Yard::IsNumber(const std::string& s)
 {
 	bool dot = true;
-	return std::all_of(s.begin(), s.end(), [&](char c) {
+	std::string temp = s;
+	if (s[0] == '-') temp.erase(temp.begin());
+	return std::all_of(temp.begin(), temp.end(), [&](char c) {
 		return (isdigit(c) || (c == '.' && dot && (dot = false) == false)); });
 }
 
 bool Yard::IsWord(const std::string& s)
 {
 	return std::all_of(s.begin(), s.end(), ::isalpha);
+}
+
+bool Yard::IsOper(const std::string& s)
+{
+	for (int i = opers.size() - 5; i < opers.size(); i++)
+	{
+		if (s == opers[i])
+			return true;
+	}
+	return false;
+}
+
+bool Yard::IsFunction(const std::string& s)
+{
+	for (int i = 0; i < opers.size() - 5; i++)
+	{
+		if (s == opers[i])
+			return true;
+	}
+	return false;
 }

@@ -13,12 +13,12 @@ namespace Shell {
 	void Info::UpdateWrap()
 	{
 		ImGui::SetNextWindowBgAlpha(1);
-		ImGui::Begin("Check", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
+		ImGui::Begin(m_label.c_str(), nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
 		ImGui::SetWindowSize({(float)m_width, (float)m_height});
 		ImGui::SetWindowPos({m_posx, m_posy});
 		
 		ImGui::SameLine();		
-		ImGui::Text("dtime: %f", MyGui::BasicInformation::deltatime);
+		ImGui::Text("Разность времени появления и исчезновения кадра: %f", MyGui::BasicInformation::deltatime);
 		
 		ImGui::End();
 	}

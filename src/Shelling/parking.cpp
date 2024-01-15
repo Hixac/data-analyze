@@ -1,3 +1,5 @@
+#include "Shelling/mainshell.h"
+#include "dataunit.h"
 #include <Shelling/parking.h>
 
 #include <implot.h>
@@ -23,97 +25,105 @@ namespace Shell {
 		ImGui::SetWindowPos({m_posx, m_posy});
 
 		if (ImGui::BeginMenuBar())
-		{	
-			if (ImGui::BeginMenu("Add object"))
-			{
-				Label("Object");
-				ImGui::InputText("##Object", &ImGuiTalkBuffer::bufferObject.first);
-				Label("Columns");
-				ImGui::SliderInt("##Columns", &ImGuiTalkBuffer::bufferColumns, 1, 100);
+		{
+			static Database::Object bufferObject;
+			static int bufferColumns = 1;
 
-				if (ImGuiTalkBuffer::bufferObject.second.size() > ImGuiTalkBuffer::bufferColumns)
-					ImGuiTalkBuffer::bufferObject.second.clear();
+			static std::string bufferName;
+			static std::string bufferValue;
+			
+			if (ImGui::BeginMenu("Добавить таблицу"))
+			{
+				Label("Таблица");
+				ImGui::InputText("##Object", &bufferObject.first);
+				Label("Колонны");
+				ImGui::SliderInt("##Columns", &bufferColumns, 1, 100);
+
+				if (bufferObject.second.size() > bufferColumns)
+				    bufferObject.second.clear();
 				
-				for (size_t i = 0; ImGuiTalkBuffer::bufferObject.second.size() < ImGuiTalkBuffer::bufferColumns && i < ImGuiTalkBuffer::bufferColumns; i++)
-					ImGuiTalkBuffer::bufferObject.second.push_back({});
+				for (size_t i = 0; bufferObject.second.size() < bufferColumns && i < bufferColumns; i++)
+				    bufferObject.second.push_back({});
 				
-				if (ImGui::BeginTable("Example", 2, ImGuiTalkBuffer::tableFlags))
+				if (ImGui::BeginTable("Пример", 2, ImGuiTalkBuffer::tableFlags))
 				{
-					ImGui::TableSetupColumn("Name");
-					ImGui::TableSetupColumn("Value");
+					ImGui::TableSetupColumn("Именование");
+					ImGui::TableSetupColumn("Значение");
 					ImGui::TableHeadersRow();
 
 					ImGui::TableNextColumn();
-					for (size_t i = 0; i < ImGuiTalkBuffer::bufferColumns; i++)
+					for (size_t i = 0; i < bufferColumns; i++)
 					{
-						CreateTableInput(ImGuiTalkBuffer::bufferObject.second[i].name, i);
+						CreateTableInput(bufferObject.second[i].name, i);
 					}
 
 					ImGui::TableNextColumn();
-					for (size_t i = 0; i < ImGuiTalkBuffer::bufferColumns; i++)
+					for (size_t i = 0; i < bufferColumns; i++)
 					{
-						CreateTableInput(ImGuiTalkBuffer::bufferObject.second[i].value, i+100);
+						CreateTableInput(bufferObject.second[i].value, i+100);
 					}
 				
 					ImGui::EndTable();
 				}
 
-				if (ImGui::Button("Commit") && !ImGuiTalkBuffer::bufferObject.first.empty() && !ImGuiTalkBuffer::data.FindCode(ImGuiTalkBuffer::bufferObject.first))
+				if (ImGui::Button("Добавить") && !bufferObject.first.empty() && !ImGuiTalkBuffer::data.FindCode(bufferObject.first))
 				{
-					ImGuiTalkBuffer::data.Add(ImGuiTalkBuffer::bufferObject.first, ImGuiTalkBuffer::bufferObject.second);
+					ImGuiTalkBuffer::data.Add(bufferObject.first, bufferObject.second);
 				}
 				
 				ImGui::EndMenu();
 			}
 			ImGui::Separator();
-			if (ImGui::BeginMenu("Delete object"))
+			static unsigned int current_name = 0;
+			if (ImGui::BeginMenu("Удалить таблицу"))
 			{
-				const char* preview_val = ImGuiTalkBuffer::data.GetObjects()[ImGuiTalkBuffer::currentName].first.c_str();
+				const char* preview_val = ImGuiTalkBuffer::data.GetObjects()[current_name].first.c_str();
 				auto names = GetFirstOfPairs<std::string, std::vector<Database::Dataunit>>(ImGuiTalkBuffer::data.GetObjects());
-				Label("Listing");
-				MyGui::FastCombo("##Object listing", names, ImGuiTalkBuffer::currentName, preview_val);
-				if (ImGui::Button("Commit"))
+				Label("Листинг");
+				MyGui::FastCombo("##Object listing", names, current_name, preview_val);
+				if (ImGui::Button("Удалить") && ImGuiTalkBuffer::data.GetObjects().size() - 1 != 0)
 				{
 					ImGuiTalkBuffer::data.Delete(preview_val);
+				    current_name = 0;
 				}
 				ImGui::EndMenu();
 			}
 			ImGui::Separator();
-			if (ImGui::BeginMenu("Add Change"))
+			if (ImGui::BeginMenu("Добавить Изменить"))
 			{
-				const char* preview_val = ImGuiTalkBuffer::data.GetObjects()[ImGuiTalkBuffer::currentName].first.c_str();
+				current_name = 0;
+				const char* preview_val = ImGuiTalkBuffer::data.GetObjects()[current_name].first.c_str();
 				auto names = GetFirstOfPairs<std::string, std::vector<Database::Dataunit>>(ImGuiTalkBuffer::data.GetObjects());
-				Label("Listing");
-				MyGui::FastCombo("Object listing", names, ImGuiTalkBuffer::currentName, preview_val);
+				Label("Листинг");
+				MyGui::FastCombo("Таблицы", names, current_name, preview_val);
 
 				Label("Name");
-				ImGui::InputText("##Name", &ImGuiTalkBuffer::bufferName);
+				ImGui::InputText("##Name", &bufferName);
 				Label("Value");
-				ImGui::InputText("##Value", &ImGuiTalkBuffer::bufferValue);
-				if (ImGui::Button("Commit") && !ImGuiTalkBuffer::bufferName.empty() && !ImGuiTalkBuffer::bufferValue.empty())
+				ImGui::InputText("##Value", &bufferValue);
+				if (ImGui::Button("Фиксировать") && !bufferName.empty() && !bufferValue.empty())
 				{
-					ImGuiTalkBuffer::data.AddIntoExisting(ImGuiTalkBuffer::data.GetObjects()[ImGuiTalkBuffer::currentName].first, {ImGuiTalkBuffer::bufferName, ImGuiTalkBuffer::bufferValue});
+					ImGuiTalkBuffer::data.AddIntoExisting(ImGuiTalkBuffer::data.GetObjects()[current_name].first, {bufferName, bufferValue});
 				}
 				ImGui::EndMenu();
 			}
 			ImGui::Separator();
-			if (ImGui::BeginMenu("Delete"))
+			if (ImGui::BeginMenu("Удалить"))
 			{
-				const char* preview_val = ImGuiTalkBuffer::data.GetObjects()[ImGuiTalkBuffer::currentName].first.c_str();
+				current_name = 0;
+				const char* preview_val = ImGuiTalkBuffer::data.GetObjects()[current_name].first.c_str();
 				auto names = GetFirstOfPairs<std::string, std::vector<Database::Dataunit>>(ImGuiTalkBuffer::data.GetObjects());
-				Label("Listing");
-				MyGui::FastCombo("##Object listing", names, ImGuiTalkBuffer::currentName, preview_val);
+				Label("Листинг");
+				MyGui::FastCombo("##Object listing", names, current_name, preview_val);
 
-				Label("Name");
-				ImGui::InputText("##Name", &ImGuiTalkBuffer::bufferName);
-				if (ImGui::Button("Commit") && !ImGuiTalkBuffer::bufferName.empty())
-				{
-					ImGuiTalkBuffer::data.Delete(ImGuiTalkBuffer::data.GetObjects()[ImGuiTalkBuffer::currentName].first, ImGuiTalkBuffer::bufferName);
-				}
+				Label("Именование");
+				ImGui::InputText("##Name", &bufferName);
+				if (ImGui::Button("Удалить") && !bufferName.empty())
+					ImGuiTalkBuffer::data.Delete(ImGuiTalkBuffer::data.GetObjects()[current_name].first, bufferName);
 				ImGui::EndMenu();
 			}
 			ImGui::Separator();
-			if (ImGui::BeginMenu("View"))
+			if (ImGui::BeginMenu("Вид"))
 			{
 				for (int i = 1; i < ImGuiTalkBuffer::windows->size(); i++)
 				{
@@ -128,10 +138,10 @@ namespace Shell {
 		for (auto& object : ImGuiTalkBuffer::data.GetObjects())
 		{
 			ImGui::Text("%s", object.first.c_str());
-			if (ImGui::BeginTable("Data", 2, ImGuiTalkBuffer::tableFlags))
+			if (ImGui::BeginTable("Данные", 2, ImGuiTalkBuffer::tableFlags))
 			{
-				ImGui::TableSetupColumn("Name");
-				ImGui::TableSetupColumn("Value");
+				ImGui::TableSetupColumn("Именование");
+				ImGui::TableSetupColumn("Значение");
 				ImGui::TableHeadersRow();
 
 				ImGui::TableNextColumn();

@@ -12,12 +12,17 @@
 
 Yard::Yard(std::string expression, int x)
 {
+	auto check = [](char c) { return (static_cast<unsigned char>(c) > 127); };
+	for (char c : expression)
+		if (check(c)) return;
+
 	WhiteSpaceRemoval(expression);
 		
 	unsigned int i = 0;
 	while (i < expression.size())
 	{
 		const char c = expression[i++];
+		
 		if (isdigit(c))
 		{
 			std::string snum = std::string{c};
@@ -189,7 +194,7 @@ Yard::Presedence Yard::FindHighestPresedence()
 }
 
 void Yard::WhiteSpaceRemoval(std::string& s)
-{	
+{
 	s.erase(std::remove_if(s.begin(), s.end(), ::isspace), s.end());
 }
 

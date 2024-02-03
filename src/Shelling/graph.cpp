@@ -142,7 +142,7 @@ namespace Shell {
 	
 	void Graph::Axis()
 	{
-		static std::string expr = "cos(sin(x))";
+		static std::string expr = "tg(x)";
 
 		static int selected_object = -1;
 		
@@ -184,12 +184,13 @@ namespace Shell {
 			ImGui::OpenPopup("ListingObjects");
 		ImGui::SameLine();
 		ImGui::Button("?");
-        ImGui::SetItemTooltip("Поддерживающиеся символы: + (сумма), - (разность), * (умножение), / (деление), ^ (степень)\nКлючевые слова: time (всего пройденное время), dtime (изменение времени)\nФункции: sin([выражение]), cos([выражение]), abs([выражение])");	
-		
+        ImGui::SetItemTooltip("Поддерживающиеся символы: + (сумма), - (разность (только в инфиксной форме, для отрицания \"(0-x)\") ), * (умножение), / (деление), ^ (степень)\nКлючевые слова: time (всего пройденное время), dtime (изменение времени)\nФункции: cos, sin, tg (может вызывать вопросы, но лучше при работе с ним отталкиваться на график рассеянности, поскольку точки в графике 'Ось' всегда соединяются), arccos, arcsin, arctg, ch, sh, th, arch, arsh");	
+
+#define NUMBER_OF_POINTS 51
 		if (selected_object == -1)
 		{
-			double x[51], y[51];
-			for (int i = 0; i < 51; i++)
+			double x[NUMBER_OF_POINTS], y[NUMBER_OF_POINTS];
+			for (int i = 0; i < 51; ++i)
 			{
 				Yard yard(expr, i - 25);
 				float answer; int err;
@@ -198,20 +199,21 @@ namespace Shell {
 					LOG_INFO("YARD ERROR CODE: " + std::to_string(err));
 					break;
 				}
+				
 				x[i] = i - 25;
 				y[i] = answer;
 			}
 
 			if (ImPlot::BeginPlot("##Ось", ImVec2(-1,0)))
 			{
-				ImPlot::PlotLine(("f(x) = " + expr).c_str(), x, y, 51);
+				ImPlot::PlotLine(("f(x) = " + expr).c_str(), x, y, NUMBER_OF_POINTS);
 				ImPlot::EndPlot();
 			}
 
 			if (ImGui::Button("Сгенерировать данные"))
 			{
 				std::vector<Database::Dataunit> units;
-				for (int i = 0; i < 51; i++)
+				for (int i = 0; i < NUMBER_OF_POINTS; i++)
 				{
 					units.push_back({"f(" + std::to_string(x[i]) + ")", std::to_string(x[i]) + ";" + std::to_string(y[i]), Database::Type::Point, Database::Error::None});
 				}

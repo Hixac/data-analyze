@@ -33,6 +33,6 @@ public:
 	void SetTokens(std::vector<std::string> tokens) { this->tokens = tokens; }
 	
 private:
-	std::array<std::string, 8> opers {"abs", "cos", "sin", "^", "/", "*", "-", "+"};
+	std::array<std::string, 18> opers {"abs", "cos", "sin", "tg", "arccos", "arcsin", "arctg", "ch", "sh", "th", "arch", "arsh", "arth", "^", "/", "*", "-", "+"};
 	std::vector<std::string> tokens;
 };

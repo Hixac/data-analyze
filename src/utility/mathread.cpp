@@ -82,7 +82,7 @@ int Yard::result(float& answer)
 		auto it = std::find(tokens.begin() + first, tokens.end(), ")");
 		unsigned int second = it - tokens.begin();
 		if (it == tokens.end()) return -1;
-		if (first >= 1 && (tokens[first - 1] == opers[0] || tokens[first - 1] == opers[1] || tokens[first - 1] == opers[2]))
+		if (first >= 1 && IsFunction(tokens[first - 1]))
 		{
 			yard.SetTokens(std::vector<std::string>(tokens.begin() + first + 1, it));
 			int err; if ((err = yard.result(answer)) < 0) return err;
@@ -134,6 +134,26 @@ float Yard::GetVal(Presedence p)
 		return sinf(p.operand1);
 	if (p.op == "cos")
 		return cosf(p.operand1);
+	if (p.op == "tg")
+		return tanf(p.operand1);
+	if (p.op == "arccos")
+		return acosf(p.operand1);
+	if (p.op == "arcsin")
+		return asinf(p.operand1);
+	if (p.op == "arctg")
+		return atanf(p.operand1);
+	if (p.op == "ch")
+		return coshf(p.operand1);
+	if (p.op == "sh")
+		return sinhf(p.operand1);
+	if (p.op == "th")
+		return tanhf(p.operand1);
+	if (p.op == "arsh")
+		return asinhf(p.operand1);
+	if (p.op == "arch")
+		return acoshf(p.operand1);
+	if (p.op == "arth")
+		return atanhf(p.operand1);
 	if (p.op == "^")
 		return pow(p.operand1, p.operand2);
 	if (p.op == "/")

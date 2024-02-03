@@ -52,7 +52,7 @@ namespace File {
 	void Lexer::AnalyzeSymbols()
 	{
 		std::vector<Symbol> symbols;
-		for (int i = 0; i < m_Tokens.size(); i++)
+		for (int i = 0; i < m_Tokens.size() - 1; i++)
 		{
 			std::string slice = m_Text.substr(m_Tokens[i].second + 1, m_Tokens[i + 1].second - m_Tokens[i].second - 1);
 			WhiteSpaceRemoval(slice);

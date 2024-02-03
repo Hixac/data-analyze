@@ -70,8 +70,9 @@ namespace Shell {
 		if (ImPlot::BeginPlot("##Histograms")) {
 			Database::Object obj = ImGuiTalkBuffer::data.GetObjects()[selected_object];
 			auto points = GetPoints(obj);
-			
-			ImPlot::SetupAxes(nullptr,nullptr,ImPlotAxisFlags_AutoFit,ImPlotAxisFlags_AutoFit);
+			if (points.first.size() > 0)
+				ImPlot::SetupAxes(nullptr,nullptr,ImPlotAxisFlags_AutoFit,ImPlotAxisFlags_AutoFit);
+
 			ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL,0.5f);
 			ImPlot::PlotHistogram("##Данные", &points.second[0], points.second.size());
 			ImPlot::EndPlot();
@@ -132,8 +133,9 @@ namespace Shell {
 			
 			auto& obj = ImGuiTalkBuffer::data.GetObjects()[selected_object];
 			auto points = GetPoints(obj);
-			
-			ImPlot::PlotScatter(("##" + obj.first).c_str(), &points.first[0], &points.second[0], points.first.size());
+			if (points.first.size() > 0)
+				ImPlot::PlotScatter(("##" + obj.first).c_str(), &points.first[0], &points.second[0], points.first.size());
+
 			ImPlot::PushStyleVar(ImPlotStyleVar_FillAlpha, 0.25f);
 			ImPlot::PopStyleVar();
 			ImPlot::EndPlot();

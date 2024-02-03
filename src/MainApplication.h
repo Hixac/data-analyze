@@ -28,8 +28,9 @@ public:
 		Shell::ImGuiTalkBuffer::file = std::make_unique<File::Extracter>("db.rot");
 		Shell::ImGuiTalkBuffer::parser = std::make_unique<File::Parser>(*Shell::ImGuiTalkBuffer::file);
 
-		m_Window.GetWindowIO().Fonts->AddFontFromFileTTF("../res/JetBrainsMonoNLNerdFontMono-Regular.ttf", 23, nullptr
+		m_Window.GetWindowIO().Fonts->AddFontFromFileTTF("JetBrainsMonoNLNerdFontMono-Regular.ttf", 23, nullptr
 														 , m_Window.GetWindowIO().Fonts->GetGlyphRangesCyrillic());
+
 		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.0f);
 
 		std::vector<Shell::Shell*> shells;
@@ -37,7 +38,7 @@ public:
 		Shell::Parking win1(true, "DataShow", m_Window.GetWidth(), m_Window.GetHeight(), m_Window);
 		Shell::Example win2(false, "Исходный текст", m_Window.GetWidth(), m_Window.GetHeight(), m_Window);
 		Shell::Info    win3(false, "Информация", m_Window.GetWidth(), m_Window.GetHeight(), m_Window);
-		Shell::Graph   win4(false, "График", 1000, 530, m_Window);
+		Shell::Graph   win4(false, "График", 500, 1000, m_Window);
 		
 
 		win1.SetPos(0, 0);

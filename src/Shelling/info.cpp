@@ -17,7 +17,8 @@ namespace Shell {
 		ImGui::SetWindowSize({(float)m_width, (float)m_height});
 		ImGui::SetWindowPos({m_posx, m_posy});
 		
-		ImGui::SameLine();		
+		ImGui::SameLine();
+		ImGui::Text("Программа создана для расчёта и визуализации математических функций на основе базы данных с\nвозможностью манипулировать ими, указывать типы вводимых данных и создавать новые таблицы с данными и функциями.");
 		ImGui::Text("Разность времени появления и исчезновения кадра: %f", MyGui::BasicInformation::deltatime);
 		
 		ImGui::End();

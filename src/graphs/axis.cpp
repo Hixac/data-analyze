@@ -1,9 +1,8 @@
 #include <axis.h>
 
 #include <cassert>
-#include <implot.h>
 #include <imgui.h>
-#include <misc/cpp/imgui_stdlib.h>
+#include <implot.h>
 
 #include <mathread.h>
 
@@ -20,21 +19,22 @@ namespace Graph {
 
 		if (m_min > m_max) return;
 		
-		if (!ImPlot::BeginPlot("Ось", {-1, 0})) assert(false); // Создание графика
-		ImPlot::SetupAxes("x","y");
+		if (ImPlot::BeginPlot("Ось", ImVec2(-1, 0))) { // Создание графика
+			ImPlot::SetupAxes("x","y");
 		
-		for (std::string* expr : exprs)
-		{
-			std::vector<double> x, y;
-			if (Relate(*expr, x, y) < 0) {
-				continue;
-			}
-			if (populus != nullptr) populus->push_back({x, y});
+			for (std::string* expr : exprs)
+			{
+				std::vector<double> x, y;
+				if (Relate(*expr, x, y) < 0) {
+					continue;
+				}
+				if (populus != nullptr) populus->push_back({x, y});
 			
-			ImPlot::PlotLine(("f(x) = " + *expr).c_str(), &x[0], &y[0], range);
-		}
+				ImPlot::PlotLine(("f(x) = " + *expr).c_str(), &x[0], &y[0], range);
+			}
 		
-		ImPlot::EndPlot(); // Уничтожение графика
+			ImPlot::EndPlot(); // Уничтожение графика
+		}
 	}
 
     RESULT Plot::Relate(const std::string& expr, std::vector<double>& x, std::vector<double>& y) const

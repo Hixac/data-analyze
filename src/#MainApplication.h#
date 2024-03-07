@@ -38,7 +38,7 @@ public:
 		Shell::Parking win1(true, "DataShow", m_Window.GetWidth(), m_Window.GetHeight(), m_Window);
 		Shell::Example win2(false, "Исходный текст", m_Window.GetWidth(), m_Window.GetHeight(), m_Window);
 		Shell::Info    win3(false, "Информация", m_Window.GetWidth(), m_Window.GetHeight(), m_Window);
-		Shell::Graphic win4(false, "График", 500, 1000, m_Window);
+		Shell::Graphic   win4(false, "График", 500, 1000, m_Window);
 
 		win1.SetPos(0, 0);
 		win2.SetPos(0, 29);

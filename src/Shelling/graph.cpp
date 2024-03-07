@@ -1,3 +1,4 @@
+#include "Shelling/mainshell.h"
 #include "dataunit.h"
 #include <Shelling/graph.h>
 
@@ -7,23 +8,25 @@
 
 #include <mathread.h>
 
+#include <axis.h>
+
 namespace Shell {
 
-	Graph::Graph(bool show, const std::string label, unsigned int width, unsigned int height, Window& window)
+	Graphic::Graphic(bool show, const std::string label, unsigned int width, unsigned int height, Window& window)
 	: m_Window(&window), Shell(label, width, height, show)
 	{
 		ImGui::SetNextWindowSize({(float)m_width, (float)m_height});
 	}
 	
-	void Graph::OnUpdate()
+	void Graphic::OnUpdate()
 	{
 		if (m_showWindow)
 			UpdateWrap();
 	}
 	
-	void Graph::UpdateWrap()
+	void Graphic::UpdateWrap()
 	{
-		ImGui::Begin(m_label.c_str(), nullptr, ImGuiWindowFlags_NoCollapse);
+		ImGui::Begin(m_label.c_str(), nullptr);
 
 		if (ImGui::BeginTabBar("#Plots")) {
 			if (ImGui::BeginTabItem("Ось"))
@@ -45,7 +48,7 @@ namespace Shell {
 		ImGui::End();
 	}
 
-	void Graph::Histogram()
+	void Graphic::Histogram()
 	{
 		static int selected_object = 0;
 		
@@ -79,7 +82,7 @@ namespace Shell {
 		}
 	}
 
-	std::pair<std::vector<float>, std::vector<float>> Graph::GetPoints(Database::Object obj)
+	std::pair<std::vector<float>, std::vector<float>> Graphic::GetPoints(Database::Object obj)
 	{
 		std::vector<float> x, y;
 		
@@ -107,7 +110,7 @@ namespace Shell {
 		return {x, y};
 	}
 	
-	void Graph::Scatter()
+	void Graphic::Scatter()
 	{
 		static int selected_object = 0;
 		
@@ -142,14 +145,18 @@ namespace Shell {
 		}
 	}
 	
-	void Graph::Axis()
+	void Graphic::Axis()
 	{
-		static std::string expr = "tg(x)";
+		static std::string def_val = "tg(x)";
+		static std::vector<std::string*> exprs;
 
 		static int selected_object = -1;
 		
-		if (selected_object > ImGuiTalkBuffer::data.GetObjects().size()) // Чтобы не было ошибки, при удалении нужной таблицы (ДДАААА МНЕ ЛЕНЬ ДЕЛАТЬ НОМРАЛНЬО)
+		if (selected_object > ImGuiTalkBuffer::data.GetObjects().size()) {
 			selected_object = -1;
+			exprs.clear();
+			exprs.push_back(&def_val);
+		}
 		
 		if (ImGui::BeginPopup("ListingObjects"))
         {
@@ -160,27 +167,22 @@ namespace Shell {
 			if (ImGui::Selectable("Отключить"))
 				selected_object = -1;
             ImGui::EndPopup();
-        }	
+        }
 		
-		if (selected_object != -1)
-		{
-			auto& expressions = ImGuiTalkBuffer::data.GetObjects()[selected_object].second;		
-			for (int i = 0; i < expressions.size(); i++)
-			{
-				std::string label = expressions[i].name;
-				ImGui::Text("%s", label.c_str());
-				ImGui::SameLine();
-				ImGui::InputText(("##" + label).c_str(), &expressions[i].value);
-			}
-			ImGuiTalkBuffer::parser->WriteData(ImGuiTalkBuffer::data);
-		}
-		else
-		{
-			ImGui::Text("Функция");
-			ImGui::SameLine();
-			ImGui::InputText("##math expression", &expr);
+	    if (selected_object != -1) {
+		    auto& table = ImGuiTalkBuffer::data.GetObjects()[selected_object].second;
+			exprs.clear();
+			for (auto& unit : table)
+				exprs.push_back(&unit.value);
 		}
 
+		for (int i = 0; i < exprs.size(); ++i) {
+			auto expr = &exprs[i];
+			ImGui::PushID(i);
+			ImGui::InputText("##Function", *expr);
+			ImGui::PopID();
+		}
+		
 		ImGui::SameLine();
 		if (ImGui::Button("+"))
 			ImGui::OpenPopup("ListingObjects");
@@ -188,86 +190,45 @@ namespace Shell {
 		ImGui::Button("?");
         ImGui::SetItemTooltip("Поддерживающиеся символы: + (сумма), - (разность (только в инфиксной форме, для отрицания \"(0-x)\") )\n* (умножение), / (деление), ^ (степень)\nКлючевые слова: time (всего пройденное время), dtime (изменение времени)\nФункции: cos, sin, tg (точки соединены между собой всегда, потому асимптот не видно)\narccos, arcsin, arctg, ch, sh, th, arch, arsh");	
 
-#define NUMBER_OF_POINTS 51
-		if (selected_object == -1)
-		{
-			double x[NUMBER_OF_POINTS], y[NUMBER_OF_POINTS];
-			for (int i = 0; i < 51; ++i)
-			{
-				Yard yard(expr, i - 25);
-				float answer; int err;
-				if ((err = yard.result(answer)) < 0)
-				{
-					LOG_INFO("YARD ERROR CODE: " + std::to_string(err));
-					break;
-				}
-				
-				x[i] = i - 25;
-				y[i] = answer;
-			}
+		static int min = -200;
+		ImGui::InputInt("от", &min);
 
-			if (ImPlot::BeginPlot("##Ось", ImVec2(-1,0)))
-			{
-				ImPlot::PlotLine(("f(x) = " + expr).c_str(), x, y, NUMBER_OF_POINTS);
-				ImPlot::EndPlot();
-			}
+		static int max = 200;
+		ImGui::InputInt("до", &max);
 
-			if (ImGui::Button("Сгенерировать данные"))
-			{
+		static float precision = 1;
+		ImGui::SliderFloat("точность", &precision, 0.3, 1);
+
+		ImGui::SameLine();
+		ImGui::Button("?");
+        ImGui::SetItemTooltip("Большие значения \"от\" и \"до\" приведут к уменьшению производительности");
+
+		std::vector<std::pair<std::vector<double>, std::vector<double>>> populus;
+	    Graph::Plot plot(min, max, precision);
+	    plot.Update(exprs, &populus);
+
+		if (ImGui::Button("Сгенерировать данные") && populus.size() > 0) {
+			for (int i = 0; i < populus.size(); ++i) {
 				std::vector<Database::Dataunit> units;
-				for (int i = 0; i < NUMBER_OF_POINTS; i++)
-				{
-					units.push_back({"f(" + std::to_string(x[i]) + ")", std::to_string(x[i]) + ";" + std::to_string(y[i]), Database::Type::Point, Database::Error::None});
+			    for (int j = 0; j < populus[i].first.size(); ++j) {
+					auto points = populus[i];
+					Database::Dataunit unit = {
+						.name = "f(" + std::to_string(points.first[j]) + ")",
+						.value = std::to_string(points.first[j]) + ";" + std::to_string(points.second[j]),
+						.type = Database::Type::Point,
+						.err = Database::Error::None,
+					};
+					units.push_back(unit);
 				}
-				ImGuiTalkBuffer::data.Add("Таблица", units);
-				ImGuiTalkBuffer::parser->WriteData(ImGuiTalkBuffer::data);
-			}
-		}
-		else
-		{
-			std::vector<std::pair<std::vector<double>, std::vector<double>>> datas;
-			auto& expressions = ImGuiTalkBuffer::data.GetObjects()[selected_object].second;		
-			for (int i = 0; i < expressions.size(); i++)
-			{
-				std::pair<std::vector<double>, std::vector<double>> coords;
-				for (int j = 0; j < 51; j++)
-				{
-					Yard yard(expressions[i].value, j - 25);
-					float answer; int err;
-					if ((err = yard.result(answer)) < 0)
-					{
-						LOG_INFO("YARD ERROR CODE: " + std::to_string(err));
-						break;
-					}
-					coords.first.push_back(j - 25);
-					coords.second.push_back(answer);
-				}
-				datas.push_back(coords);
-				coords.first.clear(); coords.second.clear();
-			}
-			
-			if (ImPlot::BeginPlot("Ось", ImVec2(-1,0)))
-			{
-				for (int i = 0; i < expressions.size(); i++)
-				{
-					if (datas[i].first.empty()) continue;
-					ImPlot::PlotLine(("f(x) = " + expressions[i].value).c_str(), &datas[i].first[0], &datas[i].second[0], 51);
-				}
-				ImPlot::EndPlot();
+
+				ImGuiTalkBuffer::data.Add(*exprs[i], units);
 			}
 
-			if (ImGui::Button("Сгенерировать данные"))
-			{
-				for (int i = 0; i < datas.size(); i++)
-				{
-					std::vector<Database::Dataunit> units;
-					for (int j = 0; j < datas[i].first.size(); j++)
-						units.push_back({"f(" + std::to_string(datas[i].first[j]) + ")", std::to_string(datas[i].first[j]) + ";" + std::to_string(datas[i].second[j]), Database::Type::Point, Database::Error::None});
-					ImGuiTalkBuffer::data.Add("Таблица " + std::to_string(i + 1), units);
-				}
-				ImGuiTalkBuffer::parser->WriteData(ImGuiTalkBuffer::data);
-			}
+			ImGuiTalkBuffer::parser->WriteData(ImGuiTalkBuffer::data);
 		}
+
+		// Создавать шаблон файла, если он пустой
+		// Проверить на возможные ошибки
 	}
 	
 }

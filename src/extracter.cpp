@@ -12,7 +12,7 @@ namespace File {
 	{
 		m_File.open(filepath, std::fstream::in);
 
-		if (!m_File.is_open())
+		if (!m_File.is_open() || IsEmpty())
 		{
 			std::ofstream out(filepath, std::ios::out | std::ios::trunc);
 			
@@ -84,5 +84,10 @@ namespace File {
 	void Extracter::GotoLine(size_t num)
 	{
 		m_File.seekg(num, std::ios::beg);
+	}
+
+	bool Extracter::IsEmpty()
+	{	
+		return m_File.peek() == std::ifstream::traits_type::eof();
 	}
 }

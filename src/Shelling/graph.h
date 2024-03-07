@@ -9,10 +9,10 @@
 
 namespace Shell {
 
-	class Graph : public Shell
+	class Graphic : public Shell
 	{
 	public:
-	    Graph(bool show, const std::string label, unsigned int width, unsigned int height, Window& window);
+	    Graphic(bool show, const std::string label, unsigned int width, unsigned int height, Window& window);
 
 		void OnUpdate() override;
 	private:

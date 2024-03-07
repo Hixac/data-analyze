@@ -20,6 +20,8 @@ namespace File {
 	private:
 		std::string WholeRead();
 		void GotoLine(size_t num);
+
+		bool IsEmpty();
 		
 		std::string m_Content;
 

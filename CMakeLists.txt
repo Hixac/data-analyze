@@ -21,7 +21,8 @@ set(SOURCE
   src/Shelling/example.h src/Shelling/example.cpp
   src/Shelling/info.h src/Shelling/info.cpp
   src/Shelling/graph.h src/Shelling/graph.cpp
-  src/utility/mathread.cpp src/utility/mathread.h)
+  src/utility/mathread.cpp src/utility/mathread.h
+  src/graphs/axis.h src/graphs/axis.cpp)
 
 set(IMPLOT_DIR ext/implot/)
 set(IMGUI_DIR ext/imgui/)
@@ -80,3 +81,4 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${IMPLOT_DIR})
 target_include_directories(${PROJECT_NAME} PRIVATE src/)
 target_include_directories(${PROJECT_NAME} PRIVATE src/utility/)
 target_include_directories(${PROJECT_NAME} PRIVATE src/window/)
+target_include_directories(${PROJECT_NAME} PRIVATE src/graphs/)

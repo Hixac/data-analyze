@@ -57,6 +57,7 @@ Yard::Yard(std::string expression, int x)
 int Yard::result(float& answer)
 {
 	if (tokens.size() == 0 || tokens.size() == 2) return -2;
+	if (tokens[0] == "-") return -100;
 	for (int i = 1; i < tokens.size()-1; i++)
 	{
 		auto& tok = tokens[i];

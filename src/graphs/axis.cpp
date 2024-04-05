@@ -12,25 +12,24 @@ namespace Graph {
 		: m_min(min), m_max(max), m_precision(precision)
 	{ }
 
-	void Plot::Update(const std::vector<std::string*>& exprs, std::vector<std::pair<std::vector<double>, std::vector<double>>>* populus)
+	void Plot::Update(const std::vector<std::string>& exprs, std::vector<std::pair<std::vector<double>, std::vector<double>>>* populus)
 	{
-		m_expressions = exprs;
 		const int range = (abs(m_min) + abs(m_max)) * 1/m_precision;		
 
 		if (m_min > m_max) return;
 		
-		if (ImPlot::BeginPlot("Ось", ImVec2(-1, 0))) { // Создание графика
+		if (ImPlot::BeginPlot("Ось", ImVec2(-1, 0), ImPlotFlags_Equal)) { // Создание графика
 			ImPlot::SetupAxes("x","y");
 		
-			for (std::string* expr : exprs)
+			for (std::string expr : exprs)
 			{
 				std::vector<double> x, y;
-				if (Relate(*expr, x, y) < 0) {
+				if (Relate(expr, x, y) < 0) {
 					continue;
 				}
 				if (populus != nullptr) populus->push_back({x, y});
 			
-				ImPlot::PlotLine(("f(x) = " + *expr).c_str(), &x[0], &y[0], range);
+				ImPlot::PlotLine(("f(x) = " + expr).c_str(), &x[0], &y[0], range);
 			}
 		
 			ImPlot::EndPlot(); // Уничтожение графика

@@ -2,7 +2,7 @@
 
 int main(void)
 {
-	MainApplication app(1280, 720, "Парковка");
+	MainApplication app(1280, 720, "Поточечный анализатор");
 	app.Run();
 	
     return 0;

@@ -1,5 +1,3 @@
-#include "Shelling/mainshell.h"
-#include "dataunit.h"
 #include <Shelling/graph.h>
 
 #include <implot.h>
@@ -65,10 +63,6 @@ namespace Shell {
         }
 
 		if (ImGui::Button("Выбрать таблицу")) ImGui::OpenPopup("ListingObjects");
-		ImGui::SameLine();
-		ImGui::Button("?");
-        ImGui::SetItemTooltip("График рассеянности не требует конкретных таблиц сгенерированные при помощи оси.\nЧтобы самому заполнить точки:\n необходимо создать таблицу и самостоятельно заполнить таблицу переменными\n как тип 'point', по шаблону 'x;y' (без апострофов)\n где 'икс' и 'игрек' является вещественным либо целочисленным числом\n а затем выбрать эту таблицу, дабы она отобразилась на графике.");
-		// Бог терпел и нам велел.
 
 		if (ImPlot::BeginPlot("##Histograms")) {
 			Database::Object obj = ImGuiTalkBuffer::data.GetObjects()[selected_object];
@@ -147,45 +141,48 @@ namespace Shell {
 	
 	void Graphic::Axis()
 	{
-		static std::string def_val = "tg(x)";
-		static std::vector<std::string*> exprs;
+		static std::vector<std::string> exprs;
 
 		static int selected_object = -1;
-		
-		if (selected_object > ImGuiTalkBuffer::data.GetObjects().size()) {
+
+		if (selected_object > ImGuiTalkBuffer::data.GetObjects().size())
 			selected_object = -1;
-			exprs.clear();
-			exprs.push_back(&def_val);
-		}
-		
+
 		if (ImGui::BeginPopup("ListingObjects"))
-        {
-            ImGui::SeparatorText("Таблицы");
-            for (int i = 0; i < ImGuiTalkBuffer::data.GetObjects().size(); i++)
-                if (ImGui::Selectable(ImGuiTalkBuffer::data.GetObjects()[i].first.c_str()))
-                    selected_object = i;
-			if (ImGui::Selectable("Отключить"))
+		{
+			ImGui::SeparatorText("Таблицы");
+			for (int i = 0; i < ImGuiTalkBuffer::data.GetObjects().size(); i++)
+				if (ImGui::Selectable(ImGuiTalkBuffer::data.GetObjects()[i].first.c_str()))
+					selected_object = i;
+			if (ImGui::Button("Отключить"))
 				selected_object = -1;
-            ImGui::EndPopup();
-        }
-		
-	    if (selected_object != -1) {
-		    auto& table = ImGuiTalkBuffer::data.GetObjects()[selected_object].second;
-			exprs.clear();
-			for (auto& unit : table)
-				exprs.push_back(&unit.value);
+			ImGui::EndPopup();
 		}
 
-		for (int i = 0; i < exprs.size(); ++i) {
-			auto expr = &exprs[i];
-			ImGui::PushID(i);
-			ImGui::InputText("##Function", *expr);
-			ImGui::PopID();
+		if (selected_object != -1)
+		{
+			exprs.clear();
+			for (size_t i = 0; i < ImGuiTalkBuffer::data.GetObjects()[selected_object].second.size(); i++)
+			{
+				auto& unit = ImGuiTalkBuffer::data.GetObjects()[selected_object].second[i];
+				ImGui::PushID(i);
+				ImGui::InputText("##Function", &unit.value);
+				ImGui::PopID();
+
+				exprs.push_back(unit.value);
+			}
+			ImGuiTalkBuffer::parser->WriteData(ImGuiTalkBuffer::data);
 		}
-		
+		else {
+			exprs.clear();
+			static std::string expr = "x";
+			ImGui::InputText("##Function", &expr);
+			exprs.push_back(expr);
+		}
+
 		ImGui::SameLine();
-		if (ImGui::Button("+"))
-			ImGui::OpenPopup("ListingObjects");
+		if (ImGui::Button("+")) ImGui::OpenPopup("ListingObjects");
+
 		ImGui::SameLine();
 		ImGui::Button("?");
         ImGui::SetItemTooltip("Поддерживающиеся символы: + (сумма), - (разность (только в инфиксной форме, для отрицания \"(0-x)\") )\n* (умножение), / (деление), ^ (степень)\nКлючевые слова: time (всего пройденное время), dtime (изменение времени)\nФункции: cos, sin, tg (точки соединены между собой всегда, потому асимптот не видно)\narccos, arcsin, arctg, ch, sh, th, arch, arsh");	
@@ -221,7 +218,7 @@ namespace Shell {
 					units.push_back(unit);
 				}
 
-				ImGuiTalkBuffer::data.Add(*exprs[i], units);
+				ImGuiTalkBuffer::data.Add(exprs[i], units);
 			}
 
 			ImGuiTalkBuffer::parser->WriteData(ImGuiTalkBuffer::data);

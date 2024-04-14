@@ -13,6 +13,7 @@
 #include <imgui/deltatime.h>
 
 #include <implot.h>
+#include <memory>
 
 class MainApplication : public Application
 {
@@ -26,13 +27,13 @@ public:
 		INIT_LOG();
 
 		Shell::ImGuiTalkBuffer::file = std::make_unique<File::Extracter>("db.rot");
-		Shell::ImGuiTalkBuffer::parser = std::make_unique<File::Parser>(*Shell::ImGuiTalkBuffer::file);
+		Shell::ImGuiTalkBuffer::parser = std::make_unique<File::Parser>(Shell::ImGuiTalkBuffer::file);
 
 		m_Window.GetWindowIO().Fonts->AddFontFromFileTTF("JetBrainsMonoNLNerdFontMono-Regular.ttf", 23, nullptr
 														 , m_Window.GetWindowIO().Fonts->GetGlyphRangesCyrillic());
 
 		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.0f);
-
+		
 		std::vector<Shell::Shell*> shells;
 		
 		Shell::Parking win1(true, "DataShow", m_Window.GetWidth(), m_Window.GetHeight(), m_Window);
@@ -45,8 +46,8 @@ public:
 		win3.SetPos(0, 29);
 		
 		shells.push_back(&win1);
-		shells.push_back(&win2);
 		shells.push_back(&win3);
+		shells.push_back(&win2);
 		shells.push_back(&win4);	
 
 		Shell::ImGuiTalkBuffer::windows = &shells;

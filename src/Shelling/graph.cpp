@@ -63,8 +63,13 @@ namespace Shell {
         }
 
 		if (ImGui::Button("Выбрать таблицу")) ImGui::OpenPopup("ListingObjects");
+		
+		ImGui::SameLine();
+		ImGui::Button("?");
+        ImGui::SetItemTooltip("Гистограмма показывает величину разных точек.");
+		// Бог терпел и нам велел.
 
-		if (ImPlot::BeginPlot("##Histograms")) {
+		if (ImPlot::BeginPlot("##Histograms", ImVec2(-1, -1))) {
 			Database::Object obj = ImGuiTalkBuffer::data.GetObjects()[selected_object];
 			auto points = GetPoints(obj);
 			if (points.first.size() > 0)
@@ -126,7 +131,7 @@ namespace Shell {
         ImGui::SetItemTooltip("График рассеянности не требует конкретных таблиц сгенерированные при помощи оси.\nЧтобы самому заполнить точки:\n необходимо создать таблицу и самостоятельно заполнить таблицу переменными\n как тип 'point', по шаблону 'x;y' (без апострофов)\n где 'икс' и 'игрек' является вещественным либо целочисленным числом\n а затем выбрать эту таблицу, дабы она отобразилась на графике.");
 		// Бог терпел и нам велел.
 		
-		if (ImPlot::BeginPlot("##Рассеяность")) {
+		if (ImPlot::BeginPlot("##Рассеяность", ImVec2(-1, -1))) {
 			
 			auto& obj = ImGuiTalkBuffer::data.GetObjects()[selected_object];
 			auto points = GetPoints(obj);
@@ -141,13 +146,18 @@ namespace Shell {
 	
 	void Graphic::Axis()
 	{
-		static std::vector<std::string> exprs;
+		static std::vector<std::string*> exprs;
 
 		static int selected_object = -1;
 
-		if (selected_object > ImGuiTalkBuffer::data.GetObjects().size())
+		static std::vector<std::string> def_exprs = { "x", "x", "x", "x", "x", "x", "x", "x", "x", "x"};
+		static int funcs = 1;
+		ImGui::SliderInt("Кол-во функций", &funcs, 0, 10);
+		
+		if (selected_object > ImGuiTalkBuffer::data.GetObjects().size()) {
 			selected_object = -1;
-
+		}
+		
 		if (ImGui::BeginPopup("ListingObjects"))
 		{
 			ImGui::SeparatorText("Таблицы");
@@ -156,30 +166,29 @@ namespace Shell {
 					selected_object = i;
 			if (ImGui::Button("Отключить"))
 				selected_object = -1;
-			ImGui::EndPopup();
-		}
 
-		if (selected_object != -1)
-		{
-			exprs.clear();
-			for (size_t i = 0; i < ImGuiTalkBuffer::data.GetObjects()[selected_object].second.size(); i++)
-			{
-				auto& unit = ImGuiTalkBuffer::data.GetObjects()[selected_object].second[i];
-				ImGui::PushID(i);
-				ImGui::InputText("##Function", &unit.value);
-				ImGui::PopID();
+            ImGui::EndPopup();
+        }
 
-				exprs.push_back(unit.value);
-			}
-			ImGuiTalkBuffer::parser->WriteData(ImGuiTalkBuffer::data);
+		exprs.clear();
+		for (int i = 0; i < funcs; ++i) {
+			exprs.push_back(&def_exprs[i]);
 		}
-		else {
-			exprs.clear();
-			static std::string expr = "x";
-			ImGui::InputText("##Function", &expr);
-			exprs.push_back(expr);
+		
+		if (selected_object != -1) {
+			for (auto& unit : ImGuiTalkBuffer::data.GetObjects()[selected_object].second)
+				exprs.push_back(&unit.value);
 		}
-
+		
+		for (int i = 0; i < exprs.size(); ++i) {
+			auto expr = exprs[i];
+			ImGui::PushID(i);
+			ImGui::InputText("##Function", expr);
+			ImGui::PopID();
+		}
+		// Записывает все данные внутрь, потому лучше оставить
+		ImGuiTalkBuffer::parser->WriteData(ImGuiTalkBuffer::data);
+	    
 		ImGui::SameLine();
 		if (ImGui::Button("+")) ImGui::OpenPopup("ListingObjects");
 
@@ -194,7 +203,7 @@ namespace Shell {
 		ImGui::InputInt("до", &max);
 
 		static float precision = 1;
-		ImGui::SliderFloat("точность", &precision, 0.3, 1);
+		ImGui::SliderFloat("точность", &precision, 0.1, 1);
 
 		ImGui::SameLine();
 		ImGui::Button("?");

@@ -135,31 +135,31 @@ int Yard::result(float& answer)
 float Yard::GetVal(Presedence p)
 {
 	if (p.op == "abs")
-		return abs(p.operand1);
+		return abs(p.operand1 * M_PI/180);
 	if (p.op == "sin")
-		return sinf(p.operand1);
+		return sinf(p.operand1 * M_PI/180);
 	if (p.op == "cos")
-		return cosf(p.operand1);
+		return cosf(p.operand1 * M_PI/180);
 	if (p.op == "tg")
-		return tanf(p.operand1);
+		return tanf(p.operand1 * M_PI/180);
 	if (p.op == "arccos")
-		return acosf(p.operand1);
+		return acosf(p.operand1 * M_PI/180);
 	if (p.op == "arcsin")
-		return asinf(p.operand1);
+		return asinf(p.operand1 * M_PI/180);
 	if (p.op == "arctg")
-		return atanf(p.operand1);
+		return atanf(p.operand1 * M_PI/180);
 	if (p.op == "ch")
-		return coshf(p.operand1);
+		return coshf(p.operand1 * M_PI/180);
 	if (p.op == "sh")
-		return sinhf(p.operand1);
+		return sinhf(p.operand1 * M_PI/180);
 	if (p.op == "th")
-		return tanhf(p.operand1);
+		return tanhf(p.operand1 * M_PI/180);
 	if (p.op == "arsh")
-		return asinhf(p.operand1);
+		return asinhf(p.operand1 * M_PI/180);
 	if (p.op == "arch")
-		return acoshf(p.operand1);
+		return acoshf(p.operand1 * M_PI/180);
 	if (p.op == "arth")
-		return atanhf(p.operand1);
+		return atanhf(p.operand1 * M_PI/180);
 	if (p.op == "^")
 		return pow(p.operand1, p.operand2);
 	if (p.op == "/")

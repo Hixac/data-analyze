@@ -1,5 +1,3 @@
-#include "Shelling/mainshell.h"
-#include "dataunit.h"
 #include <Shelling/parking.h>
 
 #include <implot.h>
@@ -89,7 +87,7 @@ namespace Shell {
 				ImGui::EndMenu();
 			}
 			ImGui::Separator();
-			if (ImGui::BeginMenu("Добавить Изменить"))
+			if (ImGui::BeginMenu("Изменить"))
 			{
 				current_name = 0;
 				const char* preview_val = ImGuiTalkBuffer::data.GetObjects()[current_name].first.c_str();
@@ -123,9 +121,30 @@ namespace Shell {
 				ImGui::EndMenu();
 			}
 			ImGui::Separator();
+			ImGui::PushStyleColor(ImGuiCol_Button, 0x0f0f0f);
+			if (ImGui::Button("Информация"))
+			{
+				static bool& info_active = (*ImGuiTalkBuffer::windows)[1]->GetActive();
+				info_active = !info_active;
+			}
+			ImGui::PopStyleColor();
+			ImGui::Separator();
+			ImGui::PushStyleColor(ImGuiCol_Button, 0x0f0f0f);
+			if (ImGui::Button("Сменить тему"))
+			{
+				static bool dark_theme = true;
+				dark_theme = !dark_theme;
+				if (!dark_theme) {
+					ImGui::StyleColorsLight();
+				} else {
+					ImGui::StyleColorsDark();
+				}
+			}
+			ImGui::PopStyleColor();
+			ImGui::Separator();
 			if (ImGui::BeginMenu("Вид"))
 			{
-				for (int i = 1; i < ImGuiTalkBuffer::windows->size(); i++)
+				for (int i = 2; i < ImGuiTalkBuffer::windows->size(); i++)
 				{
 					ImGui::Checkbox((*ImGuiTalkBuffer::windows)[i]->GetLabel().c_str(), &(*ImGuiTalkBuffer::windows)[i]->GetActive());
 				}

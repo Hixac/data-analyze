@@ -39,6 +39,13 @@ namespace File {
 		m_File.close();
 	}
 
+	void Extracter::OpenFile(const std::string& filepath)
+	{
+		// m_Filepath = filepath;
+		// std::ifstream file(filepath);
+	    // m_File = file; // ERROR
+	}
+	
 	void Extracter::SetContent(const std::string& content)
 	{
 		m_Content = content;

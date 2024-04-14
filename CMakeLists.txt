@@ -22,6 +22,7 @@ set(SOURCE
   src/Shelling/info.h src/Shelling/info.cpp
   src/Shelling/graph.h src/Shelling/graph.cpp
   src/utility/mathread.cpp src/utility/mathread.h
+  src/utility/filedialog.cpp src/utility/filedialog.hpp
   src/graphs/axis.h src/graphs/axis.cpp)
 
 set(IMPLOT_DIR ext/implot/)
@@ -74,6 +75,10 @@ target_link_libraries(${PROJECT_NAME} OpenGL::GL)
 target_include_directories(${PROJECT_NAME} PRIVATE deps/glfw/include)
 add_subdirectory(deps/glfw)
 target_link_libraries(${PROJECT_NAME} glfw ${GLFW_LIBRARIES})
+
+target_include_directories(${PROJECT_NAME} PUBLIC nativefiledialog-extended/)
+add_subdirectory(ext/nativefiledialog-extended/)  # файлы с библиотекой imgui
+target_link_libraries(${PROJECT_NAME} nfd)
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${SPDLOG_DIR})
 target_include_directories(${PROJECT_NAME} PRIVATE ${IMGUI_DIR})

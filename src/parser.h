@@ -11,13 +11,13 @@ namespace File {
 	class Parser
 	{
 	public:
-		Parser(Extracter& file);
+		Parser(std::unique_ptr<Extracter>& file);
 		
 	    void ReadData(Database::Intersort& data);
 	    void WriteData(Database::Intersort& data);
 		
 	private:
-		std::unique_ptr<Extracter> m_File;
+		std::unique_ptr<Extracter> *m_pFile;
 	};
 	
 }

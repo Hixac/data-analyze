@@ -2,7 +2,6 @@
 
 #include <fstream>
 #include <string>
-#include <vector>
 
 namespace File {
 	
@@ -11,6 +10,8 @@ namespace File {
 	public:
 		Extracter(const std::string& filepath);
 		~Extracter();
+
+		void OpenFile(const std::string& filepath);
 		
 		std::string ReadLine(size_t line);
 

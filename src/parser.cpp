@@ -1,21 +1,19 @@
-#include "dataunit.h"
 #include <vector>
 #include <memory>
 #include <string>
-#include <iostream>
 
 #include <parser.h>
 
 namespace File {
 
-	Parser::Parser(Extracter& file)
+	Parser::Parser(std::unique_ptr<Extracter>& file)
 	{
-		m_File = std::unique_ptr<Extracter>(&file);
+		m_pFile = &file;
 	}
 
 	void Parser::ReadData(Database::Intersort& data)
 	{
-		std::string source = m_File->GetContent();
+		std::string source = (*m_pFile)->GetContent();
 		Lexer lexer(source);
 
 		std::vector<std::vector<Symbol>> symbs = lexer.GetAllSymbols();
@@ -88,6 +86,6 @@ namespace File {
 		}
 		content += "[END]\n";
 		
-		m_File->SetContent(content);
+		(*m_pFile)->SetContent(content);
 	}
 }

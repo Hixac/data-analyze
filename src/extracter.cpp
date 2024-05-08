@@ -7,6 +7,7 @@
 
 namespace File {
 
+#if defined(_WIN32)
 	Extracter::Extracter(const std::wstring& filepath)
 		: m_Filepath(filepath)
 	{
@@ -27,12 +28,41 @@ namespace File {
 			out << "surname: str = Горелов\n";
 			out << "[END]\n";
 			out.close();
-
+						
 			m_File.open(filepath, std::ios::in | std::ios::app);
 		}
 
 		m_Content = WholeRead();
 	}
+	
+#else
+	Extracter::Extracter(const std::string& filepath)
+		: m_FilePath(filepath)
+	{
+		m_File.open(filepath, std::fstream::in);
+
+		if (!m_File.is_open() || IsEmpty())
+		{
+			std::ofstream out(filepath, std::ios::out | std::ios::trunc);
+			
+			out << "[Таблица1]\n";
+			out << "x1: int = 1\n";
+			out << "x2: float = 1.025\n";
+			out << "x3: point = 1.23;200\n";
+			out << "[Таблица2]\n";
+			out << "name: str = Тостер\n";
+			out << "name: str = Григорий\n";
+			out << "name: str = Дима\n";
+			out << "surname: str = Горелов\n";
+			out << "[END]\n";
+			out.close();
+						
+			m_File.open(filepath, std::ios::in | std::ios::app);
+		}
+
+		m_Content = WholeRead();
+	}
+#endif
 
 	Extracter::~Extracter()
 	{
@@ -43,7 +73,7 @@ namespace File {
 	{
 		m_Content = content;
 		
-		std::ofstream output(m_Filepath, std::ios::out | std::ios::trunc);
+		std::ofstream output(m_FilePath, std::ios::out | std::ios::trunc);
 		
 		if (!output.is_open())
 		{

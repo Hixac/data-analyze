@@ -8,7 +8,11 @@ namespace File {
 	class Extracter
 	{
 	public:
+#if defined(_WIN32)
 		Extracter(const std::wstring& filepath);
+#else
+		Extracter(const std::string& filepath);
+#endif
 		~Extracter();
 		
 		std::string ReadLine(size_t line);
@@ -24,7 +28,11 @@ namespace File {
 		
 		std::string m_Content;
 
+#if defined(_WIN32)
 		std::wstring m_Filepath;
+#else
+		std::string m_FilePath;
+#endif
 		std::ifstream m_File;
 	};
 	

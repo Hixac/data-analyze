@@ -1,6 +1,5 @@
 #pragma once
 
-#include <exception>
 #include <stdexcept>
 #include <string>
 
@@ -56,6 +55,7 @@ namespace Log {
 				return;
 			}
 		}
+		
 	private:
 		inline static std::string m_Name;
 		inline static bool m_IsInited = false;

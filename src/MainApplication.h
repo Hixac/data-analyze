@@ -26,7 +26,7 @@ public:
 	{
 		INIT_LOG();
 
-		Shell::ImGuiTalkBuffer::file = std::make_unique<File::Extracter>("db.rot");
+		Shell::ImGuiTalkBuffer::file = std::make_unique<File::Extracter>(L"db.rot");
 		Shell::ImGuiTalkBuffer::parser = std::make_unique<File::Parser>(Shell::ImGuiTalkBuffer::file);
 
 		m_Window.GetWindowIO().Fonts->AddFontFromFileTTF("JetBrainsMonoNLNerdFontMono-Regular.ttf", 23, nullptr

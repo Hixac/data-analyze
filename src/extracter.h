@@ -8,10 +8,8 @@ namespace File {
 	class Extracter
 	{
 	public:
-		Extracter(const std::string& filepath);
+		Extracter(const std::wstring& filepath);
 		~Extracter();
-
-		void OpenFile(const std::string& filepath);
 		
 		std::string ReadLine(size_t line);
 
@@ -26,7 +24,7 @@ namespace File {
 		
 		std::string m_Content;
 
-		std::string m_Filepath;
+		std::wstring m_Filepath;
 		std::ifstream m_File;
 	};
 	

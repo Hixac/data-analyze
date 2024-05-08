@@ -227,7 +227,7 @@ namespace Shell {
 					units.push_back(unit);
 				}
 
-				ImGuiTalkBuffer::data.Add(exprs[i], units);
+				ImGuiTalkBuffer::data.Add(*exprs[i], units);
 			}
 
 			ImGuiTalkBuffer::parser->WriteData(ImGuiTalkBuffer::data);

@@ -11,7 +11,7 @@ namespace Graph {
 		: m_min(min), m_max(max), m_precision(precision)
 	{ }
 
-	void Plot::Update(const std::vector<std::string>& exprs, std::vector<std::pair<std::vector<double>, std::vector<double>>>* populus)
+	void Plot::Update(const std::vector<std::string*>& exprs, std::vector<std::pair<std::vector<double>, std::vector<double>>>* populus)
 	{
 		const int range = (abs(m_min) + abs(m_max)) * 1/m_precision;		
 
@@ -20,15 +20,15 @@ namespace Graph {
 		if (ImPlot::BeginPlot("Ось", ImVec2(-1, -1), ImPlotFlags_CanvasOnly)) { // Создание графика
 			ImPlot::SetupAxes("x","y");
 		
-			for (std::string expr : exprs)
+			for (std::string* expr : exprs)
 			{
 				std::vector<double> x, y;
-				if (Relate(expr, x, y) < 0) {
+				if (Relate(*expr, x, y) < 0) {
 					continue;
 				}
 				if (populus != nullptr) populus->push_back({x, y});
 			
-				ImPlot::PlotLine(("f(x) = " + expr).c_str(), &x[0], &y[0], range);
+				ImPlot::PlotLine(("f(x) = " + *expr).c_str(), &x[0], &y[0], range);
 			}
 		
 			ImPlot::EndPlot(); // Уничтожение графика

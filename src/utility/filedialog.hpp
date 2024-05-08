@@ -1,6 +1,7 @@
 #pragma once
 
 #include <nfd.hpp>
+#include <string>
 
 namespace Utils {
 	
@@ -10,7 +11,7 @@ namespace Utils {
 		enum Error { None, FileDidntOpened };
 		
 		struct Path {
-		    nfdu8char_t* out;
+		    std::string out;
 			Error err;
 		};
 		

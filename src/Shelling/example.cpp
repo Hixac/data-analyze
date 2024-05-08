@@ -7,6 +7,14 @@
 
 namespace Shell {
 
+	static std::wstring s2ws(const std::string& str)
+	{
+		int size_needed = MultiByteToWideChar(CP_UTF8, 0, &str[0], (int)str.size(), NULL, 0);
+		std::wstring wstrTo(size_needed, 0);
+		MultiByteToWideChar(CP_UTF8, 0, &str[0], (int)str.size(), &wstrTo[0], size_needed);
+		return wstrTo;
+	}
+
 	void Example::OnUpdate()
 	{
 		if (m_showWindow)
@@ -27,7 +35,8 @@ namespace Shell {
 			{
 				auto filepath = Utils::FileDialog::Get().Open({"База данных", "rot"});
 				if (filepath.err == Utils::FileDialog::None) {
-					File::Extracter* pfile = new File::Extracter(filepath.out);
+					auto ws = s2ws(filepath.out);
+					File::Extracter* pfile = new File::Extracter(ws);
 					ImGuiTalkBuffer::file.reset(pfile);
 				}
 			}
@@ -36,7 +45,7 @@ namespace Shell {
 			{
 				auto filepath = Utils::FileDialog::Get().Save({"*", "rot"});
 				if (filepath.err == Utils::FileDialog::None) {
-					std::ofstream out(filepath.out);
+					std::ofstream out(s2ws(filepath.out));
 					out << ImGuiTalkBuffer::file->GetContent();
 				}
 			}

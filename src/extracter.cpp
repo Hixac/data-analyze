@@ -7,7 +7,7 @@
 
 namespace File {
 
-	Extracter::Extracter(const std::string& filepath)
+	Extracter::Extracter(const std::wstring& filepath)
 		: m_Filepath(filepath)
 	{
 		m_File.open(filepath, std::fstream::in);
@@ -30,7 +30,7 @@ namespace File {
 
 			m_File.open(filepath, std::ios::in | std::ios::app);
 		}
-		
+
 		m_Content = WholeRead();
 	}
 
@@ -39,13 +39,6 @@ namespace File {
 		m_File.close();
 	}
 
-	void Extracter::OpenFile(const std::string& filepath)
-	{
-		// m_Filepath = filepath;
-		// std::ifstream file(filepath);
-	    // m_File = file; // ERROR
-	}
-	
 	void Extracter::SetContent(const std::string& content)
 	{
 		m_Content = content;
@@ -64,7 +57,7 @@ namespace File {
 
 	std::string Extracter::WholeRead()
 	{
-		if (m_File)
+		if (m_File.is_open())
 		{
 			std::string text;
 			std::string line;

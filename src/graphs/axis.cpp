@@ -3,7 +3,7 @@
 #include <imgui.h>
 #include <implot.h>
 
-#include <mathread.h>
+#include <math_expr.hpp>
 
 namespace Graph {
 
@@ -35,21 +35,12 @@ namespace Graph {
 		}
 	}
 
-    RESULT Plot::Relate(const std::string& expr, std::vector<double>& x, std::vector<double>& y) const
+    RESULT Plot::Relate(const std::string& expr_str, std::vector<double>& x, std::vector<double>& y) const
 	{
-		for (float i = m_min; i < m_max; i += m_precision) {
-			Yard yard(expr, i);
+		auto points = Utils::do_math(expr_str, m_min, m_max, m_precision, ImGui::GetTime());
 
-			float answer; int err;
-			if ((err = yard.result(answer)) < 0)
-			{
-				LOG_INFO("YARD ERROR CODE: " + std::to_string(err));
-			    return err;
-			}
-		    
-			x.push_back(i);
-			y.push_back(answer);
-		}
+		x = points.first;
+		y = points.second;
 
 		return 0;
 	}

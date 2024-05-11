@@ -5,8 +5,6 @@
 #include <imgui.h>
 #include <misc/cpp/imgui_stdlib.h>
 
-#include <mathread.h>
-
 namespace Shell {
 
 	void Parking::OnUpdate()

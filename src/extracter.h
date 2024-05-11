@@ -29,7 +29,7 @@ namespace File {
 		std::string m_Content;
 
 #if defined(_WIN32)
-		std::wstring m_Filepath;
+		std::wstring m_FilePath;
 #else
 		std::string m_FilePath;
 #endif

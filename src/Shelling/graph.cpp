@@ -4,8 +4,6 @@
 #include <imgui.h>
 #include <misc/cpp/imgui_stdlib.h>
 
-#include <mathread.h>
-
 #include <axis.h>
 
 namespace Shell {
@@ -150,7 +148,7 @@ namespace Shell {
 
 		static int selected_object = -1;
 
-		static std::vector<std::string> def_exprs = { "x", "x", "x", "x", "x", "x", "x", "x", "x", "x"};
+		static std::vector<std::string> def_exprs = { "sin(x)", "x", "x", "x", "x", "x", "x", "x", "x", "x"};
 		static int funcs = 1;
 		ImGui::SliderInt("Кол-во функций", &funcs, 0, 10);
 		
@@ -191,10 +189,6 @@ namespace Shell {
 	    
 		ImGui::SameLine();
 		if (ImGui::Button("+")) ImGui::OpenPopup("ListingObjects");
-
-		ImGui::SameLine();
-		ImGui::Button("?");
-        ImGui::SetItemTooltip("Поддерживающиеся символы: + (сумма), - (разность (только в инфиксной форме, для отрицания \"(0-x)\") )\n* (умножение), / (деление), ^ (степень)\nКлючевые слова: time (всего пройденное время), dtime (изменение времени)\nФункции: cos, sin, tg (точки соединены между собой всегда, потому асимптот не видно)\narccos, arcsin, arctg, ch, sh, th, arch, arsh");	
 
 		static int min = -200;
 		ImGui::InputInt("от", &min);

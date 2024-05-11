@@ -16,18 +16,23 @@ set(SOURCE
   src/imgui/dynamictimer.h src/imgui/dynamictimer.cpp
   src/imgui/deltatime.h
   src/Application.h src/MainApplication.h
-  src/Shelling/mainshell.h
-  src/Shelling/parking.h src/Shelling/parking.cpp
-  src/Shelling/example.h src/Shelling/example.cpp
-  src/Shelling/info.h src/Shelling/info.cpp
-  src/Shelling/graph.h src/Shelling/graph.cpp
-  src/utility/mathread.cpp src/utility/mathread.h
+  src/shelling/mainshell.h
+  src/shelling/parking.h src/Shelling/parking.cpp
+  src/shelling/example.h src/Shelling/example.cpp
+  src/shelling/info.h src/Shelling/info.cpp
+  src/shelling/graph.h src/Shelling/graph.cpp
   src/utility/filedialog.cpp src/utility/filedialog.hpp
-  src/graphs/axis.h src/graphs/axis.cpp)
+  src/utility/math_expr.hpp
+  src/graphs/axis.h src/graphs/axis.cpp
+)
 
+set(EXPRTK_DIR ext/exprtk/)
 set(IMPLOT_DIR ext/implot/)
 set(IMGUI_DIR ext/imgui/)
 set(SPDLOG_DIR ext/spdlog/)
+
+set(EXPRTK_SRC
+	${EXPRTK_DIR}exprtk.hpp)
 
 set(IMPLOT_SRC
   ext/implot/implot.cpp
@@ -65,9 +70,15 @@ set(CMAKE_CXX_FLAGS -g)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
+if (MSVC)
+  add_compile_options(/bigobj)
+else ()
+  add_compile_options(-Wa,-mbig-obj)
+endif ()
+
 FILE(COPY res/JetBrainsMonoNLNerdFontMono-Regular.ttf DESTINATION "${CMAKE_BINARY_DIR}")
 FILE(COPY res/JetBrainsMonoNLNerdFontMono-Regular.ttf DESTINATION "${CMAKE_BINARY_DIR}/Debug")
-add_executable(${PROJECT_NAME} ${SOURCE} ${IMPLOT_SRC} ${IMGUI_SRC} ${SPDLOG_SRC})
+add_executable(${PROJECT_NAME} ${SOURCE} ${IMPLOT_SRC} ${IMGUI_SRC} ${SPDLOG_SRC} ${EXPRTK_SRC})
 
 find_package(OpenGL REQUIRED)
 target_link_libraries(${PROJECT_NAME} OpenGL::GL)
@@ -83,6 +94,7 @@ target_link_libraries(${PROJECT_NAME} nfd)
 target_include_directories(${PROJECT_NAME} PRIVATE ${SPDLOG_DIR})
 target_include_directories(${PROJECT_NAME} PRIVATE ${IMGUI_DIR})
 target_include_directories(${PROJECT_NAME} PRIVATE ${IMPLOT_DIR})
+target_include_directories(${PROJECT_NAME} PRIVATE ${EXPRTK_DIR})
 target_include_directories(${PROJECT_NAME} PRIVATE src/)
 target_include_directories(${PROJECT_NAME} PRIVATE src/utility/)
 target_include_directories(${PROJECT_NAME} PRIVATE src/window/)

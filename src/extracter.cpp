@@ -9,7 +9,7 @@ namespace File {
 
 #if defined(_WIN32)
 	Extracter::Extracter(const std::wstring& filepath)
-		: m_Filepath(filepath)
+		: m_FilePath(filepath)
 	{
 		m_File.open(filepath, std::fstream::in);
 

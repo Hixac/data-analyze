@@ -22,7 +22,7 @@ namespace Shell {
 	
 	void Graphic::UpdateWrap()
 	{
-		ImGui::Begin(m_label.c_str(), nullptr);
+		ImGui::Begin(m_label.c_str());
 
 		if (ImGui::BeginTabBar("#Plots")) {
 			if (ImGui::BeginTabItem("Ось"))
@@ -144,9 +144,38 @@ namespace Shell {
 	
 	void Graphic::Axis()
 	{
+		static bool hide_all = false;	
+
+		ImVec2 oldpos = ImGui::GetCursorPos();
+		float win_x = ImGui::GetWindowSize().x;
+
+		ImGui::SetCursorPos({ win_x - 120, 33 });
+		ImGui::Text("График");
+
+		ImGui::SetCursorPos({ win_x - 50, 32.5 });
+		if (ImGui::Button("|+|")) {
+			hide_all = !hide_all;
+		}
+		ImGui::SetCursorPos(oldpos);
+
+		static int min = -200;
+		static int max = 200;
+		static float precision = 1;
+
 		static std::vector<std::string*> exprs;
+		auto populus = new std::vector<std::pair<std::vector<double>, std::vector<double>>>;
+
+		if (hide_all) {
+
+			Graph::Plot plot(min, max, precision);
+			plot.Update(exprs, populus);
+
+			return;
+		}
 
 		static int selected_object = -1;
+
+		ImGui::PushItemWidth(500);
 
 		static std::vector<std::string> def_exprs = { "sin(x)", "x", "x", "x", "x", "x", "x", "x", "x", "x"};
 		static int funcs = 1;
@@ -178,6 +207,7 @@ namespace Shell {
 				exprs.push_back(&unit.value);
 		}
 		
+
 		for (int i = 0; i < exprs.size(); ++i) {
 			auto expr = exprs[i];
 			ImGui::PushID(i);
@@ -190,28 +220,20 @@ namespace Shell {
 		ImGui::SameLine();
 		if (ImGui::Button("+")) ImGui::OpenPopup("ListingObjects");
 
-		static int min = -200;
 		ImGui::InputInt("от", &min);
-
-		static int max = 200;
 		ImGui::InputInt("до", &max);
-
-		static float precision = 1;
-		ImGui::SliderFloat("точность", &precision, 0.1, 1);
+		ImGui::SliderFloat("точность", &precision, 0.01, 1);
+		ImGui::PopItemWidth();
 
 		ImGui::SameLine();
 		ImGui::Button("?");
         ImGui::SetItemTooltip("Большие значения \"от\" и \"до\" приведут к уменьшению производительности");
 
-		std::vector<std::pair<std::vector<double>, std::vector<double>>> populus;
-	    Graph::Plot plot(min, max, precision);
-	    plot.Update(exprs, &populus);
-
-		if (ImGui::Button("Сгенерировать данные") && populus.size() > 0) {
-			for (int i = 0; i < populus.size(); ++i) {
+		if (ImGui::Button("Сгенерировать данные") && populus->size() > 0) {
+			for (int i = 0; i < populus->size(); ++i) {
 				std::vector<Database::Dataunit> units;
-			    for (int j = 0; j < populus[i].first.size(); ++j) {
-					auto points = populus[i];
+				for (int j = 0; j < (*populus)[i].first.size(); ++j) {
+					auto points = (*populus)[i];
 					Database::Dataunit unit = {
 						.name = "f(" + std::to_string(points.first[j]) + ")",
 						.value = std::to_string(points.first[j]) + ";" + std::to_string(points.second[j]),
@@ -226,9 +248,6 @@ namespace Shell {
 
 			ImGuiTalkBuffer::parser->WriteData(ImGuiTalkBuffer::data);
 		}
-
-		// Создавать шаблон файла, если он пустой
-		// Проверить на возможные ошибки
 	}
 	
 }

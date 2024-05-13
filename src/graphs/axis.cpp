@@ -17,7 +17,7 @@ namespace Graph {
 
 		if (m_min > m_max) return;
 		
-		if (ImPlot::BeginPlot("Ось", ImVec2(-1, -1), ImPlotFlags_CanvasOnly)) { // Создание графика
+		if (ImPlot::BeginPlot("Ось", ImVec2(-1, -1), ImPlotFlags_Equal)) { // Создание графика
 			ImPlot::SetupAxes("x","y");
 		
 			for (std::string* expr : exprs)

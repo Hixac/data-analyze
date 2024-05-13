@@ -52,11 +52,11 @@ namespace Shell {
 				auto filepath = Utils::FileDialog::Get().Save({"*", "rot"});
 				if (filepath.err == Utils::FileDialog::None) {
 #if defined(_WIN32)				
-					std::ofstream out(s2ws(filepath.out));
+					std::ofstream* out = new std::ofstream(s2ws(filepath.out));
 #else
 					std::ofstream out(filepath.out);
 #endif
-					out << ImGuiTalkBuffer::file->GetContent();
+					(*out) << ImGuiTalkBuffer::file->GetContent();
 				}
 			}
 			ImGui::Separator();

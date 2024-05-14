@@ -3,6 +3,7 @@
 
 #include <random>
 #include <algorithm>
+#include <numeric>
 
 #include <implot.h>
 #include <imgui.h>
@@ -118,15 +119,14 @@ namespace Shell {
 			ImGui::InputInt("Количество чисел", &count);
 		
 			count = std::clamp(count, 1, 10000000);
-		
-			double* counter = new double[count];
-		
+
+			double* counter = (double*)calloc(count, sizeof(double));
 			for (int i = 0; i < rolls; ++i) {
 				double number = distribution(generator);
 				if (number > 0 && number < count) ++counter[int(number)];
 			}
 
-			double* sequence = new double[count];
+			double* sequence = (double*)calloc(count, sizeof(double));
 			std::iota(sequence, sequence + count, 0);
 			
 			if (ImPlot::BeginPlot("F-распределение", ImVec2(-1, -1))) {
@@ -145,7 +145,7 @@ namespace Shell {
 			if (number > 0 && number < limit) nums.push_back(number);
 		}
 
-		double* sequence = new double[nums.size()];
+		double* sequence = (double*)calloc(nums.size(), sizeof(double));
 		std::iota(sequence, sequence + nums.size() - 1, 0);
 		
 	    if (ImPlot::BeginPlot("F-распределение", ImVec2(-1, -1))) {

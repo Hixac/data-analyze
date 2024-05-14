@@ -1,4 +1,4 @@
-#include <Shelling/example.h>
+#include <shelling/example.h>
 
 #include <filedialog.hpp>
 #include <misc/cpp/imgui_stdlib.h>
@@ -53,10 +53,11 @@ namespace Shell {
 				if (filepath.err == Utils::FileDialog::None) {
 #if defined(_WIN32)				
 					std::ofstream* out = new std::ofstream(s2ws(filepath.out));
+					(*out) << ImGuiTalkBuffer::file->GetContent();
 #else
 					std::ofstream out(filepath.out);
+					out << ImGuiTalkBuffer::file->GetContent();
 #endif
-					(*out) << ImGuiTalkBuffer::file->GetContent();
 				}
 			}
 			ImGui::Separator();

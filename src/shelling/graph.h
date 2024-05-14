@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Shelling/mainshell.h>
+#include <shelling/mainshell.h>
 
 #include <window.h>
 #include <dataunit.h>
@@ -21,7 +21,8 @@ namespace Shell {
 		void Axis();
 		void Scatter();
 		void Histogram();
-
+		void FisherDistribution();
+		
 		std::pair<std::vector<float>, std::vector<float>> GetPoints(Database::Object obj);
 		
 		Window* m_Window;

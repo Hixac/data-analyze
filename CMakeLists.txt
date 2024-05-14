@@ -17,10 +17,10 @@ set(SOURCE
   src/imgui/deltatime.h
   src/Application.h src/MainApplication.h
   src/shelling/mainshell.h
-  src/shelling/parking.h src/Shelling/parking.cpp
-  src/shelling/example.h src/Shelling/example.cpp
-  src/shelling/info.h src/Shelling/info.cpp
-  src/shelling/graph.h src/Shelling/graph.cpp
+  src/shelling/parking.h src/shelling/parking.cpp
+  src/shelling/example.h src/shelling/example.cpp
+  src/shelling/info.h src/shelling/info.cpp
+  src/shelling/graph.h src/shelling/graph.cpp
   src/utility/filedialog.cpp src/utility/filedialog.hpp
   src/utility/math_expr.hpp
   src/graphs/axis.h src/graphs/axis.cpp
@@ -70,10 +70,10 @@ set(CMAKE_CXX_FLAGS -g)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
-if (MSVC)
+if (MSVC) # to compile exprtk
   add_compile_options(/bigobj)
 else ()
-  add_compile_options(-Wa,-mbig-obj)
+  # add_compile_options(-Wa,-mbig-obj)
 endif ()
 
 FILE(COPY res/JetBrainsMonoNLNerdFontMono-Regular.ttf DESTINATION "${CMAKE_BINARY_DIR}")

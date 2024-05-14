@@ -1,10 +1,10 @@
 #pragma once
 
-#include <Shelling/mainshell.h>
-#include <Shelling/parking.h>
-#include <Shelling/example.h>
-#include <Shelling/info.h>
-#include <Shelling/graph.h>
+#include <shelling/mainshell.h>
+#include <shelling/parking.h>
+#include <shelling/example.h>
+#include <shelling/info.h>
+#include <shelling/graph.h>
 
 #include <Application.h>
 

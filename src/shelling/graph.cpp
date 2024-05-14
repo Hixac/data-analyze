@@ -1,9 +1,14 @@
-#include <Shelling/graph.h>
+#include <cstdint>
+#include <shelling/graph.h>
+
+#include <random>
+#include <algorithm>
 
 #include <implot.h>
 #include <imgui.h>
 #include <misc/cpp/imgui_stdlib.h>
 
+#include <window.h>
 #include <axis.h>
 
 namespace Shell {
@@ -23,7 +28,7 @@ namespace Shell {
 	void Graphic::UpdateWrap()
 	{
 		ImGui::Begin(m_label.c_str());
-
+		
 		if (ImGui::BeginTabBar("#Plots")) {
 			if (ImGui::BeginTabItem("Ось"))
 			{
@@ -38,12 +43,119 @@ namespace Shell {
 			    Histogram();
 				ImGui::EndTabItem();
 			}
+			if (ImGui::BeginTabItem("Распределение Фишера")) {
+				FisherDistribution();
+				ImGui::EndTabItem();
+			}
 			ImGui::EndTabBar();
+		}
+
+		static bool full_screen = false;
+		
+		float win_x = ImGui::GetWindowSize().x;
+		
+		ImGui::SetCursorPos({ win_x - 180, 34 });
+		ImGui::Text("Полный экран");
+
+		ImGui::SetCursorPos({ win_x - 50, 32.5 });
+		if (ImGui::Button("|+|")) {
+
+			static ImVec2 oldpos;
+			static ImVec2 oldsize;
+			
+			full_screen = !full_screen;
+
+			if (full_screen == true) {
+			    oldpos = ImGui::GetWindowPos();
+			    oldsize = ImGui::GetWindowSize();	
+			}			
+			
+			if (full_screen == false) {
+				ImGui::SetWindowPos(oldpos);
+				ImGui::SetWindowSize(oldsize);	
+			}
+		}
+		
+		if (full_screen == true) {
+			ImGui::SetWindowPos({0, 0});
+			ImGui::SetWindowSize(ImGui::GetIO().DisplaySize);
 		}
 		
 		ImGui::End();
 	}
 
+	void Graphic::FisherDistribution()
+	{
+		static int rolls = 1000;
+		static int limit = 100;
+
+		static int numerator = 2;
+		static int denominator = 2;
+
+		static bool hide_all = true;
+		
+		ImGui::InputInt("Количество экспериментов", &rolls);
+		if (!hide_all) ImGui::InputInt("Ограничение", &limit);
+
+		ImGui::InputInt("Степень свободы (числитель)", &numerator);
+		ImGui::InputInt("Степень свободы (знаменатель)", &denominator);
+		
+		// restricting values
+		rolls = std::clamp(rolls, 1, 1000000);
+		limit = std::clamp(limit, 1, 1000000);
+	    numerator = std::clamp(numerator, 1, 1000000);
+	    denominator = std::clamp(denominator, 1, 1000000);
+		
+		std::default_random_engine generator;
+		std::fisher_f_distribution<> distribution(numerator, denominator);
+
+		if (ImGui::Button("Осциллографический вид")) hide_all = !hide_all;
+		
+		if (hide_all) {
+		
+			static int count = 10;
+			
+			ImGui::InputInt("Количество чисел", &count);
+		
+			count = std::clamp(count, 1, 10000000);
+		
+			double* counter = new double[count];
+		
+			for (int i = 0; i < rolls; ++i) {
+				double number = distribution(generator);
+				if (number > 0 && number < count) ++counter[int(number)];
+			}
+
+			double* sequence = new double[count];
+			std::iota(sequence, sequence + count, 0);
+			
+			if (ImPlot::BeginPlot("F-распределение", ImVec2(-1, -1))) {
+
+				ImPlot::PlotLine("##ебись оно конём", &sequence[0], counter, count);
+			
+				ImPlot::EndPlot();
+			}
+
+			return;
+		}
+
+		std::vector<double> nums;
+		for (int i = 0; i < rolls; ++i) {
+			double number = distribution(generator);
+			if (number > 0 && number < limit) nums.push_back(number);
+		}
+
+		double* sequence = new double[nums.size()];
+		std::iota(sequence, sequence + nums.size() - 1, 0);
+		
+	    if (ImPlot::BeginPlot("F-распределение", ImVec2(-1, -1))) {
+
+			ImPlot::PlotLine("##ебись оно конём", &sequence[0], &nums[0], nums.size());
+			
+			ImPlot::EndPlot();
+		}
+	}
+	
 	void Graphic::Histogram()
 	{
 		static int selected_object = 0;
@@ -144,16 +256,16 @@ namespace Shell {
 	
 	void Graphic::Axis()
 	{
-		static bool hide_all = false;	
-
+		static bool hide_all = false;
+		
 		ImVec2 oldpos = ImGui::GetCursorPos();
 		float win_x = ImGui::GetWindowSize().x;
-
-		ImGui::SetCursorPos({ win_x - 120, 33 });
+		
+		ImGui::SetCursorPos({ win_x - 300, 34 });
 		ImGui::Text("График");
 
-		ImGui::SetCursorPos({ win_x - 50, 32.5 });
-		if (ImGui::Button("|+|")) {
+		ImGui::SetCursorPos({ win_x - 230, 32.5 });
+		if (ImGui::Button("|-|")) {
 			hide_all = !hide_all;
 		}
 		ImGui::SetCursorPos(oldpos);
@@ -163,15 +275,11 @@ namespace Shell {
 		static float precision = 1;
 
 		static std::vector<std::string*> exprs;
-		auto populus = new std::vector<std::pair<std::vector<double>, std::vector<double>>>;
+	    auto populus = new std::vector<std::pair<std::vector<double>, std::vector<double>>>;
 
-		if (hide_all) {
-
-			Graph::Plot plot(min, max, precision);
-			plot.Update(exprs, populus);
-
-			return;
-		}
+		Graph::Plot plot(min, max, precision);
+		plot.Update(exprs, populus, hide_all);
+		if (hide_all) return;
 
 		static int selected_object = -1;
 
@@ -247,6 +355,44 @@ namespace Shell {
 			}
 
 			ImGuiTalkBuffer::parser->WriteData(ImGuiTalkBuffer::data);
+		}
+
+		ImGui::Text("Информация о функциях");
+
+		size_t size = populus->size();
+		for (int i = 0; i < size; ++i) {
+			
+			auto ys = (*populus)[i].second;
+				  
+		    double maximum = INT32_MIN;
+		    double minimum = INT32_MAX;
+			
+			for (int j = 0; j < (abs(min) + abs(max)) * 1/precision; ++j) {
+			    double y = ys[j];
+
+				if (y > maximum) maximum = y;
+				if (y < minimum) minimum = y;
+			}
+
+			ImGui::Text((std::to_string(i + 1) + ". мин: " + std::to_string(minimum) + "; макс: " + std::to_string(maximum)).c_str());
+		}
+
+		ImGui::Text("Нули функции");
+		ImGui::SameLine();
+		ImGui::Button("?");
+	    ImGui::SetItemTooltip("'Иксы' указаны лишь приблизительно, проверяется когда первая точка ниже оси абсции,\nа следующая выше, либо по максимуму и минимуму.\nТакже причина неверно указанного 'икса' является отличное от нуля значение в типе double.\nДабы это проследить, можете максимально приблизить точку на графике, чтобы удостовериться,\nчто точка не соприкасается.");
+		
+		for (int i = 0; i < size; ++i) {
+			
+			auto xs = (*populus)[i].first;
+			auto ys = (*populus)[i].second;
+			
+			for (int j = 0; j < ((abs(min) + abs(max)) * 1/precision) - 1; ++j) {
+			    if (ys[j] <= 0 && ys[j + 1] >= 0) {
+					ImGui::Text((std::to_string(i + 1) + ". x: " + std::to_string(xs[j] < xs[j+1] ? xs[j] : xs[j+1])).c_str());
+				}
+			}
+
 		}
 	}
 	

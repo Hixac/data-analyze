@@ -25,7 +25,7 @@ namespace Utils {
 
 	FileDialog::Path FileDialog::Save(nfdfilteritem_t filterItem)
 	{
-	    nfdu8char_t* path; // nfdu8char_t*& outPath
+		nfdu8char_t* path = new char[255]; // nfdu8char_t*& outPath
 		auto res = NFD::SaveDialog(path, &filterItem, 1);
 
 		Error err;

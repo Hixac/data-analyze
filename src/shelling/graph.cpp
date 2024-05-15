@@ -367,7 +367,7 @@ namespace Shell {
 		    double maximum = INT32_MIN;
 		    double minimum = INT32_MAX;
 			
-			for (int j = 0; j < (abs(min) + abs(max)) * 1/precision; ++j) {
+			for (int j = 0; j < (*populus)[i].second.size(); ++j) {
 			    double y = ys[j];
 
 				if (y > maximum) maximum = y;
@@ -387,7 +387,7 @@ namespace Shell {
 			auto xs = (*populus)[i].first;
 			auto ys = (*populus)[i].second;
 			
-			for (int j = 0; j < ((abs(min) + abs(max)) * 1/precision) - 1; ++j) {
+			for (int j = 0; j < (*populus)[i].first.size() - 1; ++j) {
 			    if (ys[j] <= 0 && ys[j + 1] >= 0) {
 					ImGui::Text((std::to_string(i + 1) + ". x: " + std::to_string(xs[j] < xs[j+1] ? xs[j] : xs[j+1])).c_str());
 				}

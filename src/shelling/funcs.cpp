@@ -105,19 +105,19 @@ namespace Shell {
 			    names.push_back(u.name);
 			});
 
-			static const char* current_name = "Ничего";
+			static std::string current_name = "Ничего";
 			
 			static unsigned int val;
-			MyGui::FastCombo("Вероятность", names, val, current_name);
+			MyGui::FastCombo("Вероятность", names, val, current_name.c_str());
 
-			current_name = names[val].c_str();
+			current_name = names[val];
 			
 			ImGui::Text((names[val] + " имеет вероятность " + table.second[val].value).c_str());
 
 			static int interval_one;
 			static int interval_two;
 
-			ImGui::SliderInt("От", &interval_one, 1, names.size() - 1);
+			ImGui::SliderInt("От", &interval_one, 0, names.size() - 1);
 			ImGui::SliderInt("До", &interval_two, 1, names.size());
 
 			if (interval_one > interval_two) interval_two = std::clamp(interval_two, interval_one + 1, int(names.size()));

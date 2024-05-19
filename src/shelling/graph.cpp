@@ -105,7 +105,7 @@ namespace Shell {
 		ImGui::SliderFloat("Дисперсия", &variance, 0.001, 100);
 		ImGui::SliderFloat("Медиана", &median, min, max);
 
-	    if (min > max) min = std::clamp(min, INT_MIN, max);
+	    min = std::clamp(min, INT_MIN, max - 1);
 		variance = std::clamp<float>(variance, 0.01, 100);
 	    median = std::clamp<float>(median, INT_MIN, 1000000);
 		
@@ -312,7 +312,7 @@ namespace Shell {
 		static std::vector<std::string*> exprs;
 	    auto populus = new std::vector<std::pair<std::vector<double>, std::vector<double>>>;
 
-		Graph::Plot plot(min, max, precision);
+		Graph::Plot plot(min, max, 1 / precision);
 		plot.Update(exprs, populus, hide_all);
 		if (hide_all) return;
 
@@ -357,6 +357,10 @@ namespace Shell {
 			ImGui::InputText("##Function", expr);
 			ImGui::PopID();
 		}
+		ImGui::SameLine();
+		ImGui::Button("?");
+		ImGui::SetItemTooltip("Поддерживающиеся символы: + (сумма), - (разность (только в инфиксной форме, для отрицания \"(0-x)\") )\n* (умножение), / (деление), ^ (степень)\nКлючевые слова: time (всего пройденное время)\nФункции: cos, sin, tan (точки соединены между собой всегда, потому асимптот не видно)\nacos, asin, cosh, sinh, acosh, asinh");
+
 		// Записывает все данные внутрь, потому лучше оставить
 		ImGuiTalkBuffer::parser->WriteData(ImGuiTalkBuffer::data);
 	    
@@ -365,12 +369,14 @@ namespace Shell {
 
 		ImGui::InputInt("от", &min);
 		ImGui::InputInt("до", &max);
-		ImGui::SliderFloat("точность", &precision, 0.01, 1);
+		ImGui::SliderFloat("множитель точек", &precision, 1, 100);
 		ImGui::PopItemWidth();
+
+		min = std::clamp(min, INT_MIN, max - 1);
 
 		ImGui::SameLine();
 		ImGui::Button("?");
-        ImGui::SetItemTooltip("Большие значения \"от\" и \"до\" приведут к уменьшению производительности");
+        ImGui::SetItemTooltip("Большое значение приведёт к потере производительности");
 
 		if (ImGui::Button("Сгенерировать данные") && populus->size() > 0) {
 			for (int i = 0; i < populus->size(); ++i) {

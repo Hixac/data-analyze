@@ -61,7 +61,9 @@ namespace Database {
 		    if (s.size() == 0 || (s.size() == 1 && s[0] == '-')) return false;
 			std::string temp = s;
 			if (s[0] == '-') temp.erase(temp.begin());
-			return std::all_of(temp.begin(), temp.end(), ::isdigit);
+			return std::all_of(temp.begin(), temp.end(), [&](char c) {
+				return ::isdigit(static_cast<unsigned char>(c));
+			});
 		}
 
 		bool IsFloat(const std::string& s)
@@ -71,7 +73,7 @@ namespace Database {
 			std::string temp = s;
 			if (s[0] == '-') temp.erase(temp.begin());
 			return std::all_of(temp.begin(), temp.end(), [&](char c) {
-				return (isdigit(c) || (c == '.' && dot && (dot = false) == false)); });
+				return (isdigit(static_cast<unsigned char>(c)) || (c == '.' && dot && (dot = false) == false)); });
 		}
 	};
 

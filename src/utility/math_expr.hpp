@@ -8,7 +8,7 @@ namespace Utils {
 
     static std::pair<std::vector<double>, std::vector<double>> 
     do_math(const std::string& expression_str, const float min, const float max, const float precision,
-			const float time, const float a = MAXFLOAT, const float b = MAXFLOAT)
+			const float time, const float a = FLT_MAX, const float b = FLT_MAX)
     {
         using symbol_table_t = exprtk::symbol_table<float>;
         using expression_t = exprtk::expression<float>;
@@ -21,11 +21,11 @@ namespace Utils {
         symbol_table.add_constants();
         symbol_table.add_constant("time", time);
 
-		if (a < MAXFLOAT) {
+		if (a < FLT_MAX) {
 			symbol_table.add_constant("a", a);
 		}
 
-		if (b < MAXFLOAT) {
+		if (b < FLT_MAX) {
 			symbol_table.add_constant("b", b);
 		}
 		

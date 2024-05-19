@@ -56,7 +56,6 @@ namespace Database {
 			return false;
 		}
 
-	private:
 	    bool IsInt(const std::string& s)
 		{
 		    if (s.size() == 0 || (s.size() == 1 && s[0] == '-')) return false;

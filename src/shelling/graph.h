@@ -19,6 +19,7 @@ namespace Shell {
 		void UpdateWrap() override;
 
 		void Axis();
+		void Gauss();
 		void Scatter();
 		void Histogram();
 		void FisherDistribution();

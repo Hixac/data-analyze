@@ -11,6 +11,7 @@
 
 #include <window.h>
 #include <axis.h>
+#include <math_expr.hpp>
 
 namespace Shell {
 
@@ -48,6 +49,11 @@ namespace Shell {
 				FisherDistribution();
 				ImGui::EndTabItem();
 			}
+			if (ImGui::BeginTabItem("Нормальное распределение")) {
+				Gauss();
+				ImGui::EndTabItem();
+			}
+			
 			ImGui::EndTabBar();
 		}
 
@@ -85,6 +91,35 @@ namespace Shell {
 		ImGui::End();
 	}
 
+	void Graphic::Gauss()
+	{
+		static int min = -100;
+		static int max = 100;
+
+		static float variance = 10;
+	    static float median = 0;
+
+		ImGui::InputInt("Мин", &min);
+		ImGui::InputInt("Макс", &max);
+
+		ImGui::SliderFloat("Дисперсия", &variance, 0.001, 100);
+		ImGui::SliderFloat("Медиана", &median, min, max);
+
+	    if (min > max) min = std::clamp(min, INT_MIN, max);
+		variance = std::clamp<float>(variance, 0.01, 100);
+	    median = std::clamp<float>(median, INT_MIN, 1000000);
+		
+		auto points = Utils::do_math("(1/(a*sqrt(2*3.1415926))) * 2.71828182 ^ (-0.5 * ((x - b)/a) ^ 2)", min, max, 0.01, 0, variance, median);
+
+		if (ImPlot::BeginPlot("##Pppp", {-1, -1})) {
+
+			std::string func = "1/(a*sqrt(2*pi)) * e ^ (-0.5 * ((x - b)/a) ^ 2)";
+			ImPlot::PlotLine(func.c_str(), &points.first[0], &points.second[0], points.first.size());
+
+			ImPlot::EndPlot();
+		}
+	}
+	
 	void Graphic::FisherDistribution()
 	{
 		static int rolls = 1000;

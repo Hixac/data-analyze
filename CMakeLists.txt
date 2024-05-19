@@ -21,6 +21,8 @@ set(SOURCE
   src/shelling/example.h src/shelling/example.cpp
   src/shelling/info.h src/shelling/info.cpp
   src/shelling/graph.h src/shelling/graph.cpp
+  src/shelling/graph.h src/shelling/graph.cpp
+  src/shelling/funcs.h src/shelling/funcs.cpp
   src/utility/filedialog.cpp src/utility/filedialog.hpp
   src/utility/math_expr.hpp
   src/graphs/axis.h src/graphs/axis.cpp

@@ -76,6 +76,12 @@ namespace File {
 					type = "point";
 				else type = "str";
 
+				if (item.IsInt(item.value)) {
+					type = "int";
+				} else if (item.IsFloat(item.value)) {
+					type = "float";
+				}
+				
 				std::string err = "";
 				item.ErrChk();
 				if (item.err == Database::Error::WrongType)

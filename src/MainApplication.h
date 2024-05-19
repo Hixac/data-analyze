@@ -5,6 +5,7 @@
 #include <shelling/example.h>
 #include <shelling/info.h>
 #include <shelling/graph.h>
+#include <shelling/funcs.h>
 
 #include <Application.h>
 
@@ -50,10 +51,11 @@ public:
 
 		std::vector<Shell::Shell*> shells;
 
-		Shell::Parking win1(true, "DataShow", m_Window.GetWidth(), m_Window.GetHeight(), m_Window);
-		Shell::Example win2(false, "Исходный текст", m_Window.GetWidth(), m_Window.GetHeight(), m_Window);
-		Shell::Info    win3(false, "Информация", m_Window.GetWidth(), m_Window.GetHeight(), m_Window);
-		Shell::Graphic win4(false, "График", 500, 1000, m_Window);
+		Shell::Parking   win1(true, "DataShow", m_Window.GetWidth(), m_Window.GetHeight(), m_Window);
+		Shell::Example   win2(false, "Исходный текст", m_Window.GetWidth(), m_Window.GetHeight(), m_Window);
+		Shell::Info      win3(false, "Информация", m_Window.GetWidth(), m_Window.GetHeight(), m_Window);
+		Shell::Graphic   win4(false, "График", 500, 1000, m_Window);
+		Shell::Functions win5(false, "Функции", 500, 1000, m_Window);
 
 		win1.SetPos(0, 0);
 		win2.SetPos(0, 29);
@@ -63,6 +65,7 @@ public:
 		shells.push_back(&win3);
 		shells.push_back(&win2);
 		shells.push_back(&win4);
+		shells.push_back(&win5);
 
 		Shell::ImGuiTalkBuffer::windows = &shells;
 		Shell::ImGuiTalkBuffer::parser->ReadData(Shell::ImGuiTalkBuffer::data);

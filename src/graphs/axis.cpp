@@ -14,22 +14,35 @@ namespace Graph {
 	void Plot::Update(const std::vector<std::string*>& exprs, std::vector<std::pair<std::vector<double>, std::vector<double>>>* populus,
 		bool show)
 	{
-		const int range = (abs(m_min) + abs(m_max)) * 1/m_precision;
-
-		if (m_min > m_max) return;
-
-		for (std::string* expr : exprs)
-		{
-			std::vector<double> x, y;
-			if (Relate(*expr, x, y) < 0) {
-				continue;
-			}
-			if (populus != nullptr) populus->push_back({x, y});
-		}
-		
 		if (show && ImPlot::BeginPlot("Ось", ImVec2(-1, -1), ImPlotFlags_Equal)) { // Создание графика
 			ImPlot::SetupAxes("x","y");
-		
+
+			const int range = (abs(m_min) + abs(m_max)) * 1/m_precision;
+
+			if (m_min > m_max) return;
+
+			for (std::string* expr : exprs)
+			{
+				size_t index = expr->find(';');
+				if (index != std::string::npos) {
+					auto s1 = (*expr).substr(0, index - 1);
+					auto s2 = (*expr).substr(index + 1, expr->length());
+
+					float x = std::stof(s1);
+					float y = std::stof(s2);
+
+					ImPlot::PlotScatter("##", &x, &y, 1);
+
+					continue;
+				}
+
+				std::vector<double> x, y;
+				if (Relate(*expr, x, y) < 0) {
+					continue;
+				}
+				if (populus != nullptr) populus->push_back({x, y});
+			}
+
 			for (int i = 0; i < populus->size(); ++i)
 			{
 				auto pop = (*populus)[i];
@@ -37,6 +50,19 @@ namespace Graph {
 			}
 		
 			ImPlot::EndPlot(); // Уничтожение графика
+		}
+		else {
+			for (std::string* expr : exprs)
+			{
+				size_t index = expr->find(';');
+				if (index != std::string::npos) continue;
+
+				std::vector<double> x, y;
+				if (Relate(*expr, x, y) < 0) {
+					continue;
+				}
+				if (populus != nullptr) populus->push_back({ x, y });
+			}
 		}
 	}
 

@@ -32,8 +32,7 @@ namespace Shell {
 		ImGui::Begin(m_label.c_str());
 		
 		if (ImGui::BeginTabBar("#Plots")) {
-			if (ImGui::BeginTabItem("Ось"))
-			{
+			if (ImGui::BeginTabItem("Ось")) {
 				Axis();
 				ImGui::EndTabItem();
 			}
@@ -211,7 +210,7 @@ namespace Shell {
 		
 		ImGui::SameLine();
 		ImGui::Button("?");
-        ImGui::SetItemTooltip("Гистограмма показывает величину разных точек.");
+        ImGui::SetItemTooltip("Гистограмма визуально представляет распределение непрерывной числовой переменной,\n при котором измеряется частота появления в наборе данных сходных значений.\n По оси х откладываются числовые значения, которые разбиты на диапазоны или интервалы.");
 		// Бог терпел и нам велел.
 
 		if (ImPlot::BeginPlot("##Histograms", ImVec2(-1, -1))) {
@@ -312,33 +311,13 @@ namespace Shell {
 		static std::vector<std::string*> exprs;
 	    auto populus = new std::vector<std::pair<std::vector<double>, std::vector<double>>>;
 
-		Graph::Plot plot(min, max, 1 / precision);
-		plot.Update(exprs, populus, hide_all);
-		if (hide_all) return;
-
 		static int selected_object = -1;
-
-		ImGui::PushItemWidth(500);
-
 		static std::vector<std::string> def_exprs = { "sin(x)", "x", "x", "x", "x", "x", "x", "x", "x", "x"};
 		static int funcs = 1;
-		ImGui::SliderInt("Кол-во функций", &funcs, 0, 10);
-		
-		if (selected_object > ImGuiTalkBuffer::data.GetObjects().size()) {
+
+		if (selected_object >= ImGuiTalkBuffer::data.GetObjects().size()) {
 			selected_object = -1;
 		}
-		
-		if (ImGui::BeginPopup("ListingObjects"))
-		{
-			ImGui::SeparatorText("Таблицы");
-			for (int i = 0; i < ImGuiTalkBuffer::data.GetObjects().size(); i++)
-				if (ImGui::Selectable(ImGuiTalkBuffer::data.GetObjects()[i].first.c_str()))
-					selected_object = i;
-			if (ImGui::Button("Отключить"))
-				selected_object = -1;
-
-            ImGui::EndPopup();
-        }
 
 		exprs.clear();
 		for (int i = 0; i < funcs; ++i) {
@@ -349,7 +328,27 @@ namespace Shell {
 			for (auto& unit : ImGuiTalkBuffer::data.GetObjects()[selected_object].second)
 				exprs.push_back(&unit.value);
 		}
+
+		Graph::Plot plot(min, max, 1 / precision);
+		plot.Update(exprs, populus, hide_all);
+		if (hide_all) return;
+
+
+		ImGui::PushItemWidth(500);
+
+		ImGui::SliderInt("Кол-во функций", &funcs, 0, 10);
 		
+		
+		if (ImGui::BeginPopup("ListingObjects")) {
+			ImGui::SeparatorText("Таблицы");
+			for (int i = 0; i < ImGuiTalkBuffer::data.GetObjects().size(); i++)
+				if (ImGui::Selectable(ImGuiTalkBuffer::data.GetObjects()[i].first.c_str()))
+					selected_object = i;
+			if (ImGui::Button("Отключить"))
+				selected_object = -1;
+
+            ImGui::EndPopup();
+        }
 
 		for (int i = 0; i < exprs.size(); ++i) {
 			auto expr = exprs[i];
@@ -378,11 +377,12 @@ namespace Shell {
 		ImGui::Button("?");
         ImGui::SetItemTooltip("Большое значение приведёт к потере производительности");
 
-		if (ImGui::Button("Сгенерировать данные") && populus->size() > 0) {
+		if (ImGui::Button("Сгенерировать данные")) {
 			for (int i = 0; i < populus->size(); ++i) {
 				std::vector<Database::Dataunit> units;
-				for (int j = 0; j < (*populus)[i].first.size(); ++j) {
+				for (int j = 0, g = 0; j < (*populus)[i].first.size(); j += int((*populus)[i].first.size() / 100)) {
 					auto points = (*populus)[i];
+
 					Database::Dataunit unit = {
 						.name = "f(" + std::to_string(points.first[j]) + ")",
 						.value = std::to_string(points.first[j]) + ";" + std::to_string(points.second[j]),

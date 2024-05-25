@@ -164,8 +164,7 @@ namespace Shell {
 			std::iota(sequence, sequence + count, 0);
 			
 			if (ImPlot::BeginPlot("F-распределение", ImVec2(-1, -1))) {
-
-				ImPlot::PlotLine("##ебись оно конём", &sequence[0], counter, count);
+				ImPlot::PlotLine("##ебись оно конём", sequence, counter, count);
 			
 				ImPlot::EndPlot();
 			}
@@ -183,8 +182,7 @@ namespace Shell {
 		std::iota(sequence, sequence + nums.size() - 1, 0);
 		
 	    if (ImPlot::BeginPlot("F-распределение", ImVec2(-1, -1))) {
-
-			ImPlot::PlotLine("##ебись оно конём", &sequence[0], &nums[0], nums.size());
+			ImPlot::PlotLine("##ебись оно конём", sequence, &nums[0], nums.size());
 			
 			ImPlot::EndPlot();
 		}

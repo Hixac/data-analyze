@@ -53,7 +53,7 @@ public:
 
 		Shell::Parking   win1(true, "DataShow", m_Window.GetWidth(), m_Window.GetHeight(), m_Window);
 		Shell::Example   win2(false, "Исходный текст", m_Window.GetWidth(), m_Window.GetHeight(), m_Window);
-		Shell::Info      win3(false, "Информация", m_Window.GetWidth(), m_Window.GetHeight(), m_Window);
+		Shell::Info      win3(false, "Информация", 500, 500, m_Window);
 		Shell::Graphic   win4(false, "График", 500, 1000, m_Window);
 		Shell::Functions win5(false, "Функции", 500, 1000, m_Window);
 
@@ -76,7 +76,6 @@ public:
 
 			win1.SetScreen(m_Window.GetWindowIO().DisplaySize.x, m_Window.GetWindowIO().DisplaySize.y);
 			win2.SetScreen(m_Window.GetWindowIO().DisplaySize.x, m_Window.GetWindowIO().DisplaySize.y - 29);
-			win3.SetScreen(m_Window.GetWindowIO().DisplaySize.x, m_Window.GetWindowIO().DisplaySize.y - 29);
 
 			for (auto& shell : shells)
 				shell->OnUpdate();

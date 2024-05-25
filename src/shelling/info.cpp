@@ -13,9 +13,7 @@ namespace Shell {
 	void Info::UpdateWrap()
 	{
 		ImGui::SetNextWindowBgAlpha(1);
-		ImGui::Begin(m_label.c_str(), nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
-		ImGui::SetWindowSize({(float)m_width, (float)m_height});
-		ImGui::SetWindowPos({m_posx, m_posy});
+		ImGui::Begin(m_label.c_str(), 0, ImGuiWindowFlags_AlwaysAutoResize);
 		
 		ImGui::SameLine();
 		ImGui::Text("Программа создана для расчёта и визуализации математических функций на\n основе базы данных с возможностью манипулировать ими, указывать типы вводимых\n данных и создавать новые таблицы с данными и функциями. Может проводить\n анализ статистических данных на графиках, исследовать зависимости, выявлять\n тренды, аномалии или другие интересующие факторы.");

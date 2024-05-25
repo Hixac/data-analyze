@@ -119,13 +119,14 @@ namespace Shell {
 				ImGui::EndMenu();
 			}
 			ImGui::Separator();
-			ImGui::PushStyleColor(ImGuiCol_Button, 0x0f0f0f);
-			if (ImGui::Button("Информация"))
+			if (ImGui::BeginMenu("Вид"))
 			{
-				static bool& info_active = (*ImGuiTalkBuffer::windows)[1]->GetActive();
-				info_active = !info_active;
+				for (int i = 2; i < ImGuiTalkBuffer::windows->size(); i++)
+				{
+					ImGui::Checkbox((*ImGuiTalkBuffer::windows)[i]->GetLabel().c_str(), &(*ImGuiTalkBuffer::windows)[i]->GetActive());
+				}
+				ImGui::EndMenu();
 			}
-			ImGui::PopStyleColor();
 			ImGui::Separator();
 			ImGui::PushStyleColor(ImGuiCol_Button, 0x0f0f0f);
 			if (ImGui::Button("Сменить тему"))
@@ -140,14 +141,13 @@ namespace Shell {
 			}
 			ImGui::PopStyleColor();
 			ImGui::Separator();
-			if (ImGui::BeginMenu("Вид"))
+			ImGui::PushStyleColor(ImGuiCol_Button, 0x0f0f0f);
+			if (ImGui::Button("?"))
 			{
-				for (int i = 2; i < ImGuiTalkBuffer::windows->size(); i++)
-				{
-					ImGui::Checkbox((*ImGuiTalkBuffer::windows)[i]->GetLabel().c_str(), &(*ImGuiTalkBuffer::windows)[i]->GetActive());
-				}
-				ImGui::EndMenu();
+				static bool& info_active = (*ImGuiTalkBuffer::windows)[1]->GetActive();
+				info_active = !info_active;
 			}
+			ImGui::PopStyleColor();
 			ImGui::Separator();
 			ImGui::EndMenuBar();
 		}

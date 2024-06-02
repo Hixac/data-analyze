@@ -13,6 +13,9 @@
 #include <axis.h>
 #include <math_expr.hpp>
 
+#define GRAPH_BUTTON_STATE 1100
+#define FULL_SCREEN_STATE 1000
+
 namespace Shell {
 
 	Graphic::Graphic(bool show, const std::string label, unsigned int width, unsigned int height, Window& window)
@@ -59,6 +62,11 @@ namespace Shell {
 		static bool full_screen = false;
 		
 		float win_x = ImGui::GetWindowSize().x;
+		if (win_x < FULL_SCREEN_STATE) {
+			ImGui::End();
+			return;
+		}
+		
 		
 		ImGui::SetCursorPos({ win_x - 180, 34 });
 		ImGui::Text("Полный экран");
@@ -154,17 +162,19 @@ namespace Shell {
 		
 			count = std::clamp(count, 1, 10000000);
 
-			double* counter = (double*)calloc(count, sizeof(double));
-			for (int i = 0; i < rolls; ++i) {
+			double* counter = (double*)calloc(count * 10, sizeof(double));
+			for (int i = 0; i < rolls * 10; ++i) {
 				double number = distribution(generator);
-				if (number > 0 && number < count) ++counter[int(number)];
+				if (number > 0 && number < count * 10) counter[int(number)] += 0.1f;
 			}
 
-			double* sequence = (double*)calloc(count, sizeof(double));
-			std::iota(sequence, sequence + count, 0);
+			double* sequence = (double*)calloc(count * 10, sizeof(double));
+		    for (int i = 0; i < count * 10; ++i) {
+				sequence[i] = double(i)/10;
+			}
 			
 			if (ImPlot::BeginPlot("F-распределение", ImVec2(-1, -1))) {
-				ImPlot::PlotLine("##ебись оно конём", sequence, counter, count);
+				ImPlot::PlotLine("##ебись оно конём", sequence, counter, count * 10);
 			
 				ImPlot::EndPlot();
 			}
@@ -177,12 +187,12 @@ namespace Shell {
 			double number = distribution(generator);
 			if (number > 0 && number < limit) nums.push_back(number);
 		}
-
+		
 		double* sequence = (double*)calloc(nums.size(), sizeof(double));
 		std::iota(sequence, sequence + nums.size() - 1, 0);
 		
 	    if (ImPlot::BeginPlot("F-распределение", ImVec2(-1, -1))) {
-			ImPlot::PlotLine("##ебись оно конём", sequence, &nums[0], nums.size());
+			ImPlot::PlotLine("##ебись оно конём", sequence, &nums[0], nums.size() - 1);
 			
 			ImPlot::EndPlot();
 		}
@@ -292,12 +302,14 @@ namespace Shell {
 		
 		ImVec2 oldpos = ImGui::GetCursorPos();
 		float win_x = ImGui::GetWindowSize().x;
-		
-		ImGui::SetCursorPos({ win_x - 300, 34 });
-		ImGui::Text("График");
+
+		if (win_x > GRAPH_BUTTON_STATE) { // the hell is that double statement?
+			ImGui::SetCursorPos({ win_x - 300, 34 });
+			ImGui::Text("График");
+		}
 
 		ImGui::SetCursorPos({ win_x - 230, 32.5 });
-		if (ImGui::Button("|-|")) {
+		if (win_x > GRAPH_BUTTON_STATE && ImGui::Button("|-|")) {
 			hide_all = !hide_all;
 		}
 		ImGui::SetCursorPos(oldpos);

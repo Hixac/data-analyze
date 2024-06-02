@@ -93,9 +93,9 @@ namespace Shell {
 				Label("Листинг");
 				MyGui::FastCombo("Таблицы", names, current_name, preview_val);
 
-				Label("Name");
+				Label("Именование");
 				ImGui::InputText("##Name", &bufferName);
-				Label("Value");
+				Label("Значение");
 				ImGui::InputText("##Value", &bufferValue);
 				if (ImGui::Button("Фиксировать") && !bufferName.empty() && !bufferValue.empty())
 				{

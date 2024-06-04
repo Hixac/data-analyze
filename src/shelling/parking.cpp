@@ -5,6 +5,8 @@
 #include <imgui.h>
 #include <misc/cpp/imgui_stdlib.h>
 
+#include <utility/windows_utils.hpp>
+
 namespace Shell {
 
 	void Parking::OnUpdate()
@@ -87,11 +89,10 @@ namespace Shell {
 			ImGui::Separator();
 			if (ImGui::BeginMenu("Изменить"))
 			{
-				current_name = 0;
 				const char* preview_val = ImGuiTalkBuffer::data.GetObjects()[current_name].first.c_str();
 				auto names = GetFirstOfPairs<std::string, std::vector<Database::Dataunit>>(ImGuiTalkBuffer::data.GetObjects());
 				Label("Листинг");
-				MyGui::FastCombo("Таблицы", names, current_name, preview_val);
+				MyGui::FastCombo("##Таблицы", names, current_name, preview_val);
 
 				Label("Именование");
 				ImGui::InputText("##Name", &bufferName);
@@ -106,7 +107,6 @@ namespace Shell {
 			ImGui::Separator();
 			if (ImGui::BeginMenu("Удалить"))
 			{
-				current_name = 0;
 				const char* preview_val = ImGuiTalkBuffer::data.GetObjects()[current_name].first.c_str();
 				auto names = GetFirstOfPairs<std::string, std::vector<Database::Dataunit>>(ImGuiTalkBuffer::data.GetObjects());
 				Label("Листинг");
@@ -131,13 +131,15 @@ namespace Shell {
 			ImGui::PushStyleColor(ImGuiCol_Button, 0x0f0f0f);
 			if (ImGui::Button("Сменить тему"))
 			{
-				static bool dark_theme = true;
+				static bool dark_theme = !std::stoi(Utils::GetThemeStateWindows());
 				dark_theme = !dark_theme;
 				if (!dark_theme) {
 					ImGui::StyleColorsLight();
 				} else {
 					ImGui::StyleColorsDark();
 				}
+
+				Utils::SaveThemeStateWindows(std::to_string(!dark_theme));
 			}
 			ImGui::PopStyleColor();
 			ImGui::Separator();

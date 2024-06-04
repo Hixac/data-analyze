@@ -10,6 +10,7 @@
 #include <Application.h>
 
 #include <Base.h>
+#include <utility/windows_utils.hpp>
 
 #include <imgui/deltatime.h>
 
@@ -69,6 +70,10 @@ public:
 
 		Shell::ImGuiTalkBuffer::windows = &shells;
 		Shell::ImGuiTalkBuffer::parser->ReadData(Shell::ImGuiTalkBuffer::data);
+
+		if (Utils::GetThemeStateWindows() == "1") {
+			ImGui::StyleColorsLight();
+		}
 
 		while (m_Window.StartUpdate())
 		{

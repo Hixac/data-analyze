@@ -25,6 +25,7 @@ set(SOURCE
   src/shelling/funcs.h src/shelling/funcs.cpp
   src/utility/filedialog.cpp src/utility/filedialog.hpp
   src/utility/math_expr.hpp
+  src/utility/windows_utils.hpp
   src/graphs/axis.h src/graphs/axis.cpp
 )
 

@@ -1,21 +1,12 @@
 #include <shelling/example.h>
 
 #include <filedialog.hpp>
+#include <utility/windows_utils.hpp>
 #include <misc/cpp/imgui_stdlib.h>
 
 #include <fstream>
 
 namespace Shell {
-
-#if defined(_WIN32)
-	static std::wstring s2ws(const std::string& str)
-	{
-		int size_needed = MultiByteToWideChar(CP_UTF8, 0, &str[0], (int)str.size(), NULL, 0);
-		std::wstring wstrTo(size_needed, 0);
-		MultiByteToWideChar(CP_UTF8, 0, &str[0], (int)str.size(), &wstrTo[0], size_needed);
-		return wstrTo;
-	}
-#endif
 
 	void Example::OnUpdate()
 	{
@@ -38,7 +29,7 @@ namespace Shell {
 				auto filepath = Utils::FileDialog::Get().Open({"База данных", "rot"});
 				if (filepath.err == Utils::FileDialog::None) {
 #if defined(_WIN32)
-					auto ws = s2ws(filepath.out);
+					auto ws = Utils::s2ws(filepath.out);
 					File::Extracter *pfile = new File::Extracter(ws);
 #else
 					File::Extracter *pfile = new File::Extracter(filepath.out);
@@ -52,7 +43,7 @@ namespace Shell {
 				auto filepath = Utils::FileDialog::Get().Save({"*", "rot"});
 				if (filepath.err == Utils::FileDialog::None) {
 #if defined(_WIN32)				
-					std::ofstream* out = new std::ofstream(s2ws(filepath.out));
+					std::ofstream* out = new std::ofstream(Utils::s2ws(filepath.out));
 					(*out) << ImGuiTalkBuffer::file->GetContent();
 #else
 					std::ofstream out(filepath.out);

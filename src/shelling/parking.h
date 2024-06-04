@@ -1,3 +1,5 @@
+#pragma once
+
 #include <shelling/mainshell.h>
 
 #include <window.h>

@@ -16,7 +16,7 @@ namespace MyGui {
 				const bool is_selected = (value == i);
 				if (ImGui::Selectable(values[i].c_str(), is_selected))
 					value = i;
-						
+				
 				if (is_selected)
 					ImGui::SetItemDefaultFocus();
 			}

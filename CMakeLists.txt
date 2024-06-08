@@ -74,14 +74,17 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 if (MSVC) # to compile exprtk
-  add_compile_options(/bigobj)
+	add_compile_options(/bigobj)
+
+	enable_language("RC")
+	set (WIN32_RESOURCES ${CMAKE_CURRENT_SOURCE_DIR}/res/app.rc)
 else ()
   # add_compile_options(-Wa,-mbig-obj)
 endif ()
 
 FILE(COPY res/JetBrainsMonoNLNerdFontMono-Regular.ttf DESTINATION "${CMAKE_BINARY_DIR}")
 FILE(COPY res/JetBrainsMonoNLNerdFontMono-Regular.ttf DESTINATION "${CMAKE_BINARY_DIR}/Debug")
-add_executable(${PROJECT_NAME} ${SOURCE} ${IMPLOT_SRC} ${IMGUI_SRC} ${SPDLOG_SRC} ${EXPRTK_SRC})
+add_executable(${PROJECT_NAME} ${WIN32_RESOURCES} ${SOURCE} ${IMPLOT_SRC} ${IMGUI_SRC} ${SPDLOG_SRC} ${EXPRTK_SRC})
 
 find_package(OpenGL REQUIRED)
 target_link_libraries(${PROJECT_NAME} OpenGL::GL)

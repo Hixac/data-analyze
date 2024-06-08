@@ -47,8 +47,7 @@ namespace Utils {
 
 		std::ifstream in(path + "config.ini");
 		if (!in) {
-			std::ofstream out(path + "config.ini", std::ios::trunc);
-			out << "0";
+			SaveThemeStateWindows("0");
 
 			in.clear();
 			in.open(path + "config.ini");

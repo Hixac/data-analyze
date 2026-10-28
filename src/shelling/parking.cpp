@@ -128,6 +128,7 @@ namespace Shell {
 				ImGui::EndMenu();
 			}
 			ImGui::Separator();
+#if defined(WIN32)
 			ImGui::PushStyleColor(ImGuiCol_Button, 0x0f0f0f);
 			if (ImGui::Button("Сменить тему"))
 			{
@@ -138,11 +139,11 @@ namespace Shell {
 				} else {
 					ImGui::StyleColorsDark();
 				}
-
-				Utils::SaveThemeStateWindows(std::to_string(!dark_theme));
+                Utils::SaveThemeStateWindows(std::to_string(!dark_theme));
 			}
 			ImGui::PopStyleColor();
 			ImGui::Separator();
+#endif
 			ImGui::PushStyleColor(ImGuiCol_Button, 0x0f0f0f);
 			if (ImGui::Button("?"))
 			{

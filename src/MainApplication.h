@@ -71,9 +71,11 @@ public:
 		Shell::ImGuiTalkBuffer::windows = &shells;
 		Shell::ImGuiTalkBuffer::parser->ReadData(Shell::ImGuiTalkBuffer::data);
 
+#if defined(WIN32)
 		if (Utils::GetThemeStateWindows() == "1") {
 			ImGui::StyleColorsLight();
 		}
+#endif
 
 		while (m_Window.StartUpdate())
 		{
